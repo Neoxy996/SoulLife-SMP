@@ -1,12 +1,14 @@
 <div align="center">
 
-# ⚰️ SoulLife
+# ⚰️ SoulLife SMP
 
-**Die. Become a Ghost. Sacrifice. Survive.**
+**A hardcore death mod for Minecraft multiplayer servers.**
 
-![Version](https://img.shields.io/badge/version-1.0.0-gold)
-![MC](https://img.shields.io/badge/Minecraft-1.20.1-green)
-![NeoForge](https://img.shields.io/badge/NeoForge-1.20.1-orange)
+Die. Become a ghost. Sacrifice rare items to return to life.  
+After 20 deaths, you are trapped as a spectator **forever**.
+
+![Version](https://img.shields.io/badge/version-1.1.0-gold)
+![NeoForge](https://img.shields.io/badge/NeoForge-1.21.1-orange)
 ![Fabric](https://img.shields.io/badge/Fabric-1.20.1-blue)
 ![Forge](https://img.shields.io/badge/Forge-1.20.1-red)
 ![Server Side](https://img.shields.io/badge/Side-Server--Side-purple)
@@ -18,7 +20,7 @@
 
 ## About
 
-SoulLife is a hardcore survival mod. When you die, you become a ghost wearing white leather armor and enter Spectator mode. To return to life, you must sacrifice a specific item from your inventory. Each death requires a rarer and more valuable item. After **20 deaths**, you become a permanent spectator — forever.
+SoulLife SMP is a hardcore survival mod designed for Minecraft multiplayer servers. When you die, you become a ghost trapped in Spectator mode wearing white leather armor. To return to life, you must sacrifice a specific item from your inventory. Each death requires a progressively rarer and more valuable item. After your 20th death, your soul is imprisoned forever as a permanent spectator.
 
 ---
 
@@ -26,48 +28,37 @@ SoulLife is a hardcore survival mod. When you die, you become a ghost wearing wh
 
 When you die:
 - You enter **Spectator mode** as a ghost
-- You receive **White Leather Armor** with Binding Curse and Unbreaking III (cannot be removed)
-- You receive **Speed I** and **Glowing** effects permanently
-- A **Wither Boss sound** plays (only you hear it)
-- The **Sidebar** shows the item you must sacrifice
-- A **red message** broadcasts to all players that you need help
+- You receive **White Leather Armor** with Binding Curse and Unbreaking III
+- You get **Speed I** and **Glowing** effects permanently
+- The required **sacrifice item** is shown in the sidebar
+- Everyone sees a **red message** that you need help
 
 To return to life:
-- Place the required sacrifice item in your inventory
-- It will be consumed automatically
-- **Totem particles and sound** play on revival
-- A **green message** broadcasts your revival to all players
-- Your armor and effects are removed
+- Collect the required **sacrifice item**
+- Hold it in your inventory
+- It is **automatically consumed**
+- **Totem particles and sound** play
+- A **green message** broadcasts your revival
 - You return to **Survival mode**
 
 ---
 
 ## Sacrifice Items (Death 1 to 20)
 
-| Death | Item Required |
-|:-----:|:-------------|
-| 1 | Iron Ingot |
-| 2 | Gold Ingot |
-| 3 | Emerald |
-| 4 | Diamond |
-| 5 | Golden Apple |
-| 6 | Iron Block |
-| 7 | Gold Block |
-| 8 | Emerald Block |
-| 9 | Diamond Block |
-| 10 | End Crystal |
-| 11 | Netherite Scrap |
-| 12 | Netherite Ingot |
-| 13 | Totem of Undying |
-| 14 | Netherite Upgrade Smithing Template |
-| 15 | Wither Skeleton Skull |
-| 16 | Nether Star |
-| 17 | Enchanted Golden Apple |
-| 18 | Netherite Block |
-| 19 | Beacon |
-| 20 | **Dragon Egg — Permanent Spectator Forever** |
+| Death | Item | Death | Item |
+|:-----:|------|:-----:|------|
+| 1 | Iron Ingot | 11 | Netherite Scrap |
+| 2 | Gold Ingot | 12 | Netherite Ingot |
+| 3 | Emerald | 13 | Totem of Undying |
+| 4 | Diamond | 14 | Netherite Upgrade Template |
+| 5 | Golden Apple | 15 | Wither Skeleton Skull |
+| 6 | Iron Block | 16 | **Nether Star** |
+| 7 | Gold Block | 17 | Enchanted Golden Apple |
+| 8 | Emerald Block | 18 | Netherite Block |
+| 9 | Diamond Block | 19 | Beacon |
+| 10 | End Crystal | 20 | **Dragon Egg** (Permanent Spectator) |
 
-After the 20th death, there is no way back. You are a spectator for the rest of the world's lifetime unless an admin resets your deaths.
+**Death 20 is final.** There is no coming back.
 
 ---
 
@@ -79,48 +70,84 @@ After the 20th death, there is no way back. You are a spectator for the rest of 
 |---------|-------------|
 | `/soullife check` | Shows your current death count |
 | `/soullife next` | Shows the next item you must sacrifice |
-| `/soullife info` | Shows information about the mod |
-| `/soullife gui` | Lists all 20 sacrifice items in chat with your progress |
+| `/soullife info` | Shows mod information |
+| `/soullife gui` | Lists all 20 sacrifice items in chat |
+| `/soullife language` | Change your language |
+| `/soullife language list` | View all supported languages |
+| `/soullife language <code>` | Change to a specific language |
 
 ### Admin Commands (OP Level 2)
 
 | Command | Description |
 |---------|-------------|
-| `/soullife edititem <death1-20> <item>` | Change the sacrifice item for a specific death |
-| `/soullife reset` | Reset all sacrifice items back to default |
+| `/soullife edititem <death#> <item>` | Change a sacrifice item |
+| `/soullife reset` | Reset all items to default |
 | `/soullife add <player> <amount>` | Add deaths to a player |
 | `/soullife remove <player> <amount>` | Remove deaths from a player |
-| `/soullife set <player> <amount>` | Set a player's death count to a specific number |
+| `/soullife set <player> <amount>` | Set a player's death count |
 
-All admin commands support **Tab autocomplete** for player names, death slots, and item IDs including modded items and blocks.
-
-Setting a player's deaths below 20 with `/soullife set` or `/soullife remove` will automatically revive them from permanent spectator if applicable.
+All commands support **Tab autocomplete**.
 
 ---
 
 ## Languages
 
-The mod automatically uses your Minecraft language setting. Supported languages:
+The mod automatically detects your Minecraft language setting. You can override it with `/soullife language <code>`.
 
 | Language | Code |
 |----------|------|
 | English | `en_us` |
-| Arabic | `ar_sa` |
-| French | `fr_fr` |
-| Spanish | `es_es` |
-| Portuguese (Brazil) | `pt_br` |
+| العربية | `ar_sa` |
+| Français | `fr_fr` |
+| Español | `es_es` |
+| Português | `pt_br` |
+
+---
+
+## Crafting Recipe
+
+### Dragon Egg Crafting
+
+```
+      End Crystal
+Crying Obsidian | Nether Star | Crying Obsidian
+Netherite Ingot | Netherite Ingot | Netherite Ingot
+Netherite Ingot | Netherite Ingot | Netherite Ingot
+         ↓
+     Dragon Egg
+```
 
 ---
 
 ## Installation
 
-1. Download the correct JAR file for your mod loader from the [Releases](../../releases) page
+1. Download the correct JAR for your mod loader from [Releases](../../releases)
+   - `SoulLife-SMP-neoforge-1.21.1.jar` → NeoForge 1.21.1
+   - `SoulLife-SMP-fabric-1.20.1.jar` → Fabric 1.20.1
+   - `SoulLife-SMP-forge-1.20.1.jar` → Forge 1.20.1
+
 2. Place the JAR in your server's `mods/` folder
-3. Start the server
 
-This mod is **server-side only**. Players do not need to install anything on their client.
+3. Start your server
 
-> Fabric users also need [Fabric API](https://modrinth.com/mod/fabric-api) installed on the server.
+**Fabric users:** Also install [Fabric API](https://modrinth.com/mod/fabric-api)
+
+---
+
+## Features
+
+✅ **20-Death Progression System**  
+✅ **Ghost State** (Spectator mode with effects)  
+✅ **White Leather Armor** with Binding Curse  
+✅ **Speed I + Glowing** effects  
+✅ **Wither Sound** on death  
+✅ **Totem Particles & Sound** on revival  
+✅ **Permanent Spectator** after death 20  
+✅ **5 Languages** (with per-player selection)  
+✅ **Customizable Items** (via `/soullife edititem`)  
+✅ **Dragon Egg Recipe** (craftable with rare items)  
+✅ **Server-Side Only** (no client installation needed)  
+✅ **Multi-Loader Support** (NeoForge, Fabric, Forge)
 
 ---
 
@@ -128,7 +155,7 @@ This mod is **server-side only**. Players do not need to install anything on the
 
 | Loader | Version |
 |--------|---------|
-| NeoForge | 1.20.1 |
+| NeoForge | 1.21.1 |
 | Fabric | 1.20.1 |
 | Forge | 1.20.1 |
 
@@ -136,14 +163,11 @@ This mod is **server-side only**. Players do not need to install anything on the
 
 ## Building from Source
 
-Requirements: JDK 17 or higher
+Requirements: JDK 21 or higher
 
 ```bash
-git clone https://github.com/YourUsername/SoulLife.git
-cd SoulLife
-
 # Build NeoForge
-./gradlew :neoforge-1.20.1:build
+./gradlew :neoforge-1.21.1:build
 
 # Build Fabric
 ./gradlew :fabric-1.20.1:build
@@ -152,39 +176,32 @@ cd SoulLife
 ./gradlew :forge-1.20.1:build
 ```
 
-Output JARs are located in `<loader>/build/libs/`
+Output JARs in `<loader>/build/libs/`
 
 ---
 
 ## Project Structure
 
 ```
-SoulLife/
-├── common/                  Shared code for all loaders
-│   └── src/main/java/com/soullife/
-│       ├── manager/         DeathManager, GhostManager, SacrificeManager, Commands
-│       ├── data/            PlayerData
-│       └── util/            MessageUtil, ScoreboardManager
-├── neoforge-1.20.1/         NeoForge platform code
-├── fabric-1.20.1/           Fabric platform code
-├── forge-1.20.1/            Forge platform code
-└── .github/workflows/       GitHub Actions CI build
+SoulLife-SMP/
+├── common/                   Shared code
+├── neoforge-1.21.1/         NeoForge 1.21.1
+├── fabric-1.20.1/           Fabric 1.20.1
+├── forge-1.20.1/            Forge 1.20.1
+├── .github/workflows/        GitHub Actions CI
+└── docs/                     Documentation
 ```
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
----
-
-## Contributing
-
-Pull requests are welcome. For major changes please open an issue first to discuss what you would like to change.
+MIT License — Free to use, modify, and distribute. See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
+
 Made with ❤️ by the SoulLife Team
+
 </div>
