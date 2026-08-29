@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "soullife",
+  "version": "1.0.0",
+  "name": "SoulLife",
+  "description": "Die and become a ghost. Sacrifice items to return to life. 20 deaths = Spectator forever.",
+  "authors": ["SoulLife Team"],
+  "license": "MIT",
+  "icon": "assets/soullife/soullife.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.soullife.fabric.SoulLifeFabric"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "fabric": "*",
+    "minecraft": "1.20.x",
+    "java": ">=17"
+  }
+}
