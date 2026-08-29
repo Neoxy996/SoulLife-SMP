@@ -1,0 +1,35 @@
+{
+  "soullife.death.title": "§cYou died! Death %s/20",
+  "soullife.death.sacrifice": "§cSacrifice §f%s §cto return to life!",
+  "soullife.death.help": "§c☠ %s needs help!",
+  "soullife.death.permanent": "§4§l⚰ Your soul is trapped forever...",
+  "soullife.death.permanent.broadcast": "§4§l☠ %s has become a ghost forever!",
+  "soullife.death.permanent.check": "You are a permanent spectator. (20/20)",
+
+  "soullife.revive.broadcast": "§a§l✨ %s has been revived!",
+  "soullife.revive.personal": "§aYour soul has been freed! Welcome back!",
+
+  "soullife.cmd.check": "§eYou have §6%s §edeaths!",
+  "soullife.cmd.next": "§eNext sacrifice item: §f%s",
+  "soullife.cmd.info.title": "§6§l⚰ SoulLife Mod",
+  "soullife.cmd.info.desc": "§fDie and become a ghost. Sacrifice items to return.",
+  "soullife.cmd.info.deaths": "§eEach death requires a rarer sacrifice item.",
+  "soullife.cmd.info.sacrifice": "§cHold the required item to revive yourself.",
+  "soullife.cmd.info.permanent": "§4After 20 deaths you become a spectator FOREVER.",
+  "soullife.cmd.gui.title": "§6§l⚰ SoulLife - Sacrifice Items",
+  "soullife.cmd.gui.deaths": "Your deaths: %s/20",
+
+  "soullife.cmd.add": "§aAdded §6%s §adeaths to §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.remove": "§aRemoved §6%s §adeaths from §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.set": "§aSet §f%s §adeaths: §7%s §8→ §e%s§8/20",
+  "soullife.cmd.edititem": "§aDeath §f%s §aitem changed to: §f%s",
+  "soullife.cmd.reset": "§aAll sacrifice items reset to default!",
+
+  "soullife.cmd.language.changed": "§aLanguage changed to: §f%s",
+  "soullife.cmd.language.current": "§eCurrent language: §f%s §7(%s)",
+  "soullife.cmd.language.list.title": "§6§lSupported Languages:",
+  "soullife.cmd.language.reset": "§aLanguage reset to default (English)",
+  "soullife.cmd.language.invalid": "§cUnsupported language: §f%s §c. Use /soullife language list",
+
+  "soullife.error.noperm": "§cYou don't have permission to use this command!"
+}

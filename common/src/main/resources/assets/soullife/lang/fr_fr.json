@@ -1,0 +1,35 @@
+{
+  "soullife.death.title": "§cVous êtes mort! Mort %s/20",
+  "soullife.death.sacrifice": "§cSacrifiez §f%s §cpour revenir à la vie!",
+  "soullife.death.help": "§c☠ %s a besoin d'aide!",
+  "soullife.death.permanent": "§4§l⚰ Votre âme est piégée pour toujours...",
+  "soullife.death.permanent.broadcast": "§4§l☠ %s est devenu un fantôme pour toujours!",
+  "soullife.death.permanent.check": "Vous êtes spectateur permanent. (20/20)",
+
+  "soullife.revive.broadcast": "§a§l✨ %s a été ressuscité!",
+  "soullife.revive.personal": "§aVotre âme est libérée! Bienvenue de retour!",
+
+  "soullife.cmd.check": "§eVous avez §6%s §emorts!",
+  "soullife.cmd.next": "§eProchain sacrifice: §f%s",
+  "soullife.cmd.info.title": "§6§l⚰ Mod SoulLife",
+  "soullife.cmd.info.desc": "§fMourez et devenez un fantôme. Sacrifiez des objets.",
+  "soullife.cmd.info.deaths": "§eChaque mort nécessite un sacrifice plus rare.",
+  "soullife.cmd.info.sacrifice": "§cTenez l'objet requis pour vous ressusciter.",
+  "soullife.cmd.info.permanent": "§4Après 20 morts vous devenez spectateur POUR TOUJOURS.",
+  "soullife.cmd.gui.title": "§6§l⚰ SoulLife - Objets de Sacrifice",
+  "soullife.cmd.gui.deaths": "Vos morts: %s/20",
+
+  "soullife.cmd.add": "§aAjouté §6%s §amorts à §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.remove": "§aRetiré §6%s §amorts de §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.set": "§aMorts de §f%s §adéfinis: §7%s §8→ §e%s§8/20",
+  "soullife.cmd.edititem": "§aObjet mort §f%s §achangé en: §f%s",
+  "soullife.cmd.reset": "§aTous les objets réinitialisés par défaut!",
+
+  "soullife.cmd.language.changed": "§aLangue changée en: §f%s",
+  "soullife.cmd.language.current": "§eLangue actuelle: §f%s §7(%s)",
+  "soullife.cmd.language.list.title": "§6§lLangues supportées:",
+  "soullife.cmd.language.reset": "§aLangue réinitialisée par défaut (Anglais)",
+  "soullife.cmd.language.invalid": "§cLangue non supportée: §f%s §c. Utilisez /soullife language list",
+
+  "soullife.error.noperm": "§cVous n'avez pas la permission!"
+}

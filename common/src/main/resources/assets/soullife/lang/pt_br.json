@@ -1,0 +1,35 @@
+{
+  "soullife.death.title": "§cVocê morreu! Morte %s/20",
+  "soullife.death.sacrifice": "§cSacrifique §f%s §cpara voltar à vida!",
+  "soullife.death.help": "§c☠ %s precisa de ajuda!",
+  "soullife.death.permanent": "§4§l⚰ Sua alma está presa para sempre...",
+  "soullife.death.permanent.broadcast": "§4§l☠ %s se tornou um fantasma para sempre!",
+  "soullife.death.permanent.check": "Você é espectador permanente. (20/20)",
+
+  "soullife.revive.broadcast": "§a§l✨ %s foi revivido!",
+  "soullife.revive.personal": "§aSua alma foi libertada! Bem-vindo de volta!",
+
+  "soullife.cmd.check": "§eVocê tem §6%s §emortes!",
+  "soullife.cmd.next": "§ePróximo sacrifício: §f%s",
+  "soullife.cmd.info.title": "§6§l⚰ Mod SoulLife",
+  "soullife.cmd.info.desc": "§fMorra e vire fantasma. Sacrifique itens para voltar.",
+  "soullife.cmd.info.deaths": "§eCada morte exige um sacrifício mais raro.",
+  "soullife.cmd.info.sacrifice": "§cSegure o item necessário para se reviver.",
+  "soullife.cmd.info.permanent": "§4Após 20 mortes você vira espectador PARA SEMPRE.",
+  "soullife.cmd.gui.title": "§6§l⚰ SoulLife - Itens de Sacrifício",
+  "soullife.cmd.gui.deaths": "Suas mortes: %s/20",
+
+  "soullife.cmd.add": "§aAdicionado §6%s §amortes a §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.remove": "§aRemovido §6%s §amortes de §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.set": "§aMortes de §f%s§a: §7%s §8→ §e%s§8/20",
+  "soullife.cmd.edititem": "§aItem morte §f%s §aalterado para: §f%s",
+  "soullife.cmd.reset": "§aTodos os itens redefinidos!",
+
+  "soullife.cmd.language.changed": "§aIdioma alterado para: §f%s",
+  "soullife.cmd.language.current": "§eIdioma atual: §f%s §7(%s)",
+  "soullife.cmd.language.list.title": "§6§lIdiomas suportados:",
+  "soullife.cmd.language.reset": "§aIdioma redefinido (Inglês)",
+  "soullife.cmd.language.invalid": "§cIdioma não suportado: §f%s §c. Use /soullife language list",
+
+  "soullife.error.noperm": "§cVocê não tem permissão!"
+}
