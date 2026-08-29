@@ -1,0 +1,35 @@
+{
+  "soullife.death.title": "§cلقد متَّ! الموتة %s/20",
+  "soullife.death.sacrifice": "§cضحِّ بـ §f%s §cعشان ترجع للحياة!",
+  "soullife.death.help": "§c☠ %s يحتاج مساعدة!",
+  "soullife.death.permanent": "§4§l⚰ روحك انحبست للأبد...",
+  "soullife.death.permanent.broadcast": "§4§l☠ %s أصبح شبحاً للأبد!",
+  "soullife.death.permanent.check": "أنت spectator للأبد. (20/20)",
+
+  "soullife.revive.broadcast": "§a§l✨ تم إحياء %s!",
+  "soullife.revive.personal": "§aتم تحرير روحك! مرحباً بعودتك!",
+
+  "soullife.cmd.check": "§eعندك §6%s §eموتات!",
+  "soullife.cmd.next": "§eالأيتم القادم: §f%s",
+  "soullife.cmd.info.title": "§6§l⚰ مود SoulLife",
+  "soullife.cmd.info.desc": "§fمت وتحول لشبح. ضحِّ بأيتمات عشان ترجع.",
+  "soullife.cmd.info.deaths": "§eكل موتة تحتاج أيتم أنادر.",
+  "soullife.cmd.info.sacrifice": "§cاحمل الأيتم المطلوب عشان تُحيي نفسك.",
+  "soullife.cmd.info.permanent": "§4بعد 20 موتة تصبح spectator للأبد.",
+  "soullife.cmd.gui.title": "§6§l⚰ SoulLife - أيتمات التضحية",
+  "soullife.cmd.gui.deaths": "موتاتك: %s/20",
+
+  "soullife.cmd.add": "§aتمت إضافة §6%s §aموتات لـ §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.remove": "§aتمت إزالة §6%s §aموتات من §f%s §8(§7%s §8→ §e%s§8/20)",
+  "soullife.cmd.set": "§aتم تعيين موتات §f%s§a: §7%s §8→ §e%s§8/20",
+  "soullife.cmd.edititem": "§aتم تغيير أيتم الموت §f%s §aإلى: §f%s",
+  "soullife.cmd.reset": "§aتم إعادة تعيين كل الأيتمات للافتراضي!",
+
+  "soullife.cmd.language.changed": "§aتم تغيير اللغة إلى: §f%s",
+  "soullife.cmd.language.current": "§eلغتك الحالية: §f%s §7(%s)",
+  "soullife.cmd.language.list.title": "§6§lاللغات المدعومة:",
+  "soullife.cmd.language.reset": "§aتم إعادة اللغة للافتراضي (الإنجليزية)",
+  "soullife.cmd.language.invalid": "§cلغة غير مدعومة: §f%s §c. استخدم /soullife language list",
+
+  "soullife.error.noperm": "§cليس لديك صلاحية لاستخدام هذا الأمر!"
+}
