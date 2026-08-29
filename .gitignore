@@ -1,0 +1,43 @@
+# Gradle
+.gradle/
+build/
+out/
+*/build/
+*/out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# Minecraft run directories
+run/
+runs/
+
+# Forge / NeoForge generated
+src/main/resources/META-INF/accesstransformer.cfg
+*_at.cfg
+
+# Fabric cache
+.fabric/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temp
+tmp/
+temp/
