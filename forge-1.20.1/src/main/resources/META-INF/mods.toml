@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+    modId="soullife"
+    version="1.0.0"
+    displayName="SoulLife"
+    description='''
+Die and become a ghost. Sacrifice items to return to life.
+After 20 deaths, you become a spectator forever.
+    '''
+    logoFile="soullife.png"
+    authors="SoulLife Team"
+
+[[dependencies.soullife]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.soullife]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
