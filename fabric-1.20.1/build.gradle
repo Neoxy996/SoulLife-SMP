@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6.+'
+    id 'fabric-loom' version '1.17.+'
     id 'java'
     id 'maven-publish'
 }
@@ -17,14 +17,6 @@ java {
 repositories {
     mavenCentral()
     maven { url 'https://maven.fabricmc.net/' }
-}
-
-configurations {
-    all {
-        resolutionStrategy {
-            force 'org.gradle:gradle-tooling-api:8.13'
-        }
-    }
 }
 
 dependencies {
