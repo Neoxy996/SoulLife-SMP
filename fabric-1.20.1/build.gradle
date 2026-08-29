@@ -5,23 +5,33 @@ plugins {
 }
 
 group = 'com.soullife'
-version = '1.0.0'
+version = '1.1.0'
 archivesBaseName = 'SoulLife-fabric-1.20.1'
 
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
 }
 
 repositories {
+    mavenCentral()
     maven { url 'https://maven.fabricmc.net/' }
+}
+
+configurations {
+    all {
+        resolutionStrategy {
+            force 'org.gradle:gradle-tooling-api:8.13'
+        }
+    }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:1.20.1"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:0.15.+"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.+"
+    modImplementation "net.fabricmc:fabric-loader:0.15.11"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.0+1.20.1"
 }
 
 sourceSets.main {
@@ -29,9 +39,8 @@ sourceSets.main {
     resources.srcDirs += ['../common/src/main/resources']
 }
 
-processResources {
-    inputs.property "version", project.version
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+jar {
+    from("src/main/resources") {
+        include "fabric.mod.json"
     }
 }
