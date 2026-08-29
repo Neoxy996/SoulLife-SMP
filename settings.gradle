@@ -11,5 +11,6 @@ rootProject.name = 'SoulLife-SMP'
 
 include 'common'
 include 'neoforge-1.21.1'
-include 'fabric-1.20.1'
+// Fabric temporarily disabled - separate build
+// include 'fabric-1.20.1'
 include 'forge-1.20.1'
