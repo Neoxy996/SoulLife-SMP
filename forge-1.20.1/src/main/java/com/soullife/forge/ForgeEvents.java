@@ -1,0 +1,62 @@
+package com.soullife.forge;
+
+import com.soullife.manager.CommonEvents;
+import com.soullife.manager.DeathManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+public class ForgeEvents {
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            CommonEvents.onPlayerDeath(player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            CommonEvents.onPlayerRespawn(player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            CommonEvents.onPlayerLogin(player);
+    }
+
+    @SubscribeEvent
+    public static void onItemPickup(EntityItemPickupEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            CommonEvents.onItemPickup(player, event.getItem().getItem());
+    }
+
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getPlayer() instanceof ServerPlayer player)
+            if (CommonEvents.onBlockBreak(player)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            if (CommonEvents.onBlockPlace(player)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerSave(PlayerEvent.SaveToFile event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            DeathManager.saveAllToNBT(player, player.getPersistentData());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoad(PlayerEvent.LoadFromFile event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            DeathManager.loadAllFromNBT(player, player.getPersistentData());
+    }
+}
