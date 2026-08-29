@@ -1,0 +1,30 @@
+modLoader="neoforged"
+loaderVersion="[1,)"
+license="MIT"
+
+[[mods]]
+    modId="soullife"
+    version="1.1.0"
+    displayName="SoulLife SMP"
+    description='''
+A hardcore death mod for Minecraft SMP servers.
+Die and become a ghost. Sacrifice rare items to return to life.
+After 20 deaths, you become a spectator forever.
+    '''
+    logoFile="soullife.png"
+    authors="SoulLife Team"
+    displayURL="https://github.com/YourUsername/SoulLife-SMP"
+
+[[dependencies.soullife]]
+    modId="neoforge"
+    mandatory=true
+    versionRange="[1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.soullife]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.21,1.22)"
+    ordering="NONE"
+    side="BOTH"
