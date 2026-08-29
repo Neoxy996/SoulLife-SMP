@@ -1,0 +1,7 @@
+[{
+    "modid": "soullife",
+    "name": "SoulLife",
+    "description": "Die and become a ghost. Sacrifice items to return to life.",
+    "version": "1.0.0",
+    "mcversion": "1.20.1"
+}]
