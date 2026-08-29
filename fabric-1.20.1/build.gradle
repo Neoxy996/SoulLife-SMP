@@ -1,0 +1,37 @@
+plugins {
+    id 'fabric-loom' version '1.6.+'
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'com.soullife'
+version = '1.0.0'
+archivesBaseName = 'SoulLife-fabric-1.20.1'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    withSourcesJar()
+}
+
+repositories {
+    maven { url 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.20.1"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.15.+"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.+"
+}
+
+sourceSets.main {
+    java.srcDirs   += ['../common/src/main/java']
+    resources.srcDirs += ['../common/src/main/resources']
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
