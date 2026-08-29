@@ -128,24 +128,3 @@ public class DeathManager {
             data.setGhost(tag.getBoolean("soullife_ghost"));
             data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
         }
-    }
-}
-
-    // ─── Updated Save/Load with Language ──────────────────────────────────────
-    public static void saveAllToNBT(ServerPlayer player, CompoundTag tag) {
-        PlayerData data = getPlayerData(player);
-        tag.putInt("soullife_deaths", data.getDeathCount());
-        tag.putBoolean("soullife_ghost", data.isGhost());
-        tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
-        LanguageManager.saveLanguage(player, tag);
-    }
-
-    public static void loadAllFromNBT(ServerPlayer player, CompoundTag tag) {
-        if (tag.contains("soullife_deaths")) {
-            PlayerData data = getPlayerData(player);
-            data.setDeathCount(tag.getInt("soullife_deaths"));
-            data.setGhost(tag.getBoolean("soullife_ghost"));
-            data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
-        }
-        LanguageManager.loadLanguage(player, tag);
-    }
