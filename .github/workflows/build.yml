@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SoulLife-SMP-Forge-1.20.1
-          path: forge-1.20.1/build/libs/SoulLife-SMP-*.jar
+          path: forge-1.20.1/build/libs/SoulLife-forge-1.20.1-*.jar
           retention-days: 5
 
   build-fabric:
@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SoulLife-SMP-Fabric-1.20.1
-          path: fabric-1.20.1/build/libs/SoulLife-SMP-*.jar
+          path: fabric-1.20.1/build/libs/SoulLife-fabric-1.20.1-*.jar
           retention-days: 5
 
   release:
