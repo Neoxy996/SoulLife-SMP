@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import net.minecraft.network.chat.numbers.BlankFormat;
 
 /**
  * SoulLife - ScoreboardManager
@@ -39,7 +40,9 @@ public class ScoreboardManager {
                 TAB_OBJ,
                 ObjectiveCriteria.DUMMY,
                 Component.literal("§eDeaths"),
-                ObjectiveCriteria.RenderType.INTEGER
+                ObjectiveCriteria.RenderType.INTEGER,
+                true,
+                BlankFormat.INSTANCE
             );
         }
 
@@ -61,7 +64,9 @@ public class ScoreboardManager {
                 SIDEBAR_OBJ,
                 ObjectiveCriteria.DUMMY,
                 Component.literal("§c§l⚰ SoulLife"),
-                ObjectiveCriteria.RenderType.INTEGER
+                ObjectiveCriteria.RenderType.INTEGER,
+                true,
+                BlankFormat.INSTANCE
             );
         }
 
