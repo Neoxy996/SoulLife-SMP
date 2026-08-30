@@ -11,7 +11,6 @@ archivesBaseName = 'SoulLife-fabric-1.20.1'
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    withSourcesJar()
 }
 
 repositories {
@@ -36,4 +35,5 @@ jar {
     from("src/main/resources") {
         include "fabric.mod.json"
     }
+    exclude 'META-INF/**'
 }
