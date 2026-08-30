@@ -10,7 +10,6 @@ archivesBaseName = 'SoulLife-forge-1.20.1'
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(17) }
-    withSourcesJar()
 }
 
 minecraft {
@@ -39,3 +38,5 @@ jar {
         ])
     }
 }
+
+tasks.sourcesJar.enabled = false
