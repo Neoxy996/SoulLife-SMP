@@ -38,5 +38,3 @@ jar {
         ])
     }
 }
-
-build.dependsOn.remove('sourcesJar')
