@@ -40,28 +40,8 @@ public class ScoreboardManager {
                   .setScore(deaths);
     }
 
-    // ─── Sidebar: Show sacrifice item reminder ────────────────────────────────
-    public static void showSacrificeBar(ServerPlayer player, String itemName) {
-        Scoreboard scoreboard = player.getServer().getScoreboard();
-        Objective obj = scoreboard.getObjective(SIDEBAR_OBJ);
-
-        if (obj == null) {
-            obj = scoreboard.addObjective(
-                SIDEBAR_OBJ,
-                ObjectiveCriteria.DUMMY,
-                Component.literal("§c§l⚰ SoulLife"),
-                ObjectiveCriteria.RenderType.INTEGER
-            );
-        }
-
-        scoreboard.setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, obj);
-        String displayLine = "§f" + itemName;
-        scoreboard.getOrCreatePlayerScore(displayLine, obj).setScore(1);
-    }
-
-    // ─── Sidebar: Hide ────────────────────────────────────────────────────────
+    // ─── Sidebar: Hide (removed - not needed) ────────────────────────────────
     public static void hideSacrificeBar(ServerPlayer player) {
-        Scoreboard scoreboard = player.getServer().getScoreboard();
-        scoreboard.setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, null);
+        // Sidebar disabled - not needed for gameplay
     }
 }
