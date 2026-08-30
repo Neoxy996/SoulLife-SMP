@@ -47,9 +47,6 @@ public class MessageUtil {
             p.sendSystemMessage(Component.literal(
                 TranslationManager.get(p, "soullife.death.help", playerName)));
         });
-
-        // 4. Sidebar - persistent
-        ScoreboardManager.showSacrificeBar(player, itemName);
     }
 
     // ── Permanent Death ───────────────────────────────────────────────────────
