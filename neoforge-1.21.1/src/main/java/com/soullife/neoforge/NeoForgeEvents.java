@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
-@Mod.EventBusSubscriber(modid = "soullife", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = "soullife", bus = Mod.EventBusSubscriber.Bus.GAME)
 public class NeoForgeEvents {
 
     @SubscribeEvent
@@ -33,9 +33,9 @@ public class NeoForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onItemPickup(ItemEntityPickupEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player)
-            CommonEvents.onItemPickup(player, event.getItem().getItem());
+    public static void onItemPickup(ItemEntityPickupEvent.Pre event) {
+        if (event.getPlayer() instanceof ServerPlayer player)
+            CommonEvents.onItemPickup(player, event.getItemEntity().getItem().getItem());
     }
 
     @SubscribeEvent
