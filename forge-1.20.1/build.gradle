@@ -39,4 +39,4 @@ jar {
     }
 }
 
-tasks.sourcesJar.enabled = false
+build.dependsOn.remove('sourcesJar')
