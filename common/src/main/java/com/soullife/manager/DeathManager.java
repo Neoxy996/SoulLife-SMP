@@ -1,6 +1,5 @@
 package com.soullife.manager;
 
-import com.soullife.config.SoulLifeConfig;
 import com.soullife.data.PlayerData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -114,6 +113,14 @@ public class DeathManager {
     }
 
     // ─── NBT Save/Load ───────────────────────────────────────────────────────
+    public static void saveAllToNBT(ServerPlayer player, CompoundTag tag) {
+        saveToNBT(player, tag);
+    }
+
+    public static void loadAllFromNBT(ServerPlayer player, CompoundTag tag) {
+        loadFromNBT(player, tag);
+    }
+
     public static void saveToNBT(ServerPlayer player, CompoundTag tag) {
         PlayerData data = getPlayerData(player);
         tag.putInt("soullife_deaths", data.getDeathCount());
