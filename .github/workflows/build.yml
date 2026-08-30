@@ -22,29 +22,29 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-forge-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'forge-1.20.1/build.gradle', 'common/build.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-forge-
-            ${{ runner.os }}-gradle-
-
-      - name: Grant execute permission
+      - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
       - name: Build Forge
-        run: ./gradlew :forge-1.20.1:build --no-daemon --build-cache
+        run: ./gradlew :forge-1.20.1:build -x test --no-daemon
 
       - name: Upload JAR
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SoulLife-SMP-Forge-1.20.1
           path: forge-1.20.1/build/libs/SoulLife-SMP-*.jar
+          retention-days: 5
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-build-logs
+          path: forge-1.20.1/build/
+          retention-days: 3
 
   build-fabric:
     name: Build Fabric 1.20.1
@@ -58,30 +58,29 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'gradle'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.gradle/loom-cache
-          key: ${{ runner.os }}-gradle-fabric-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'fabric-1.20.1/build.gradle', 'common/build.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-fabric-
-            ${{ runner.os }}-gradle-
-
-      - name: Grant execute permission
+      - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
       - name: Build Fabric
-        run: ./gradlew :fabric-1.20.1:build --no-daemon --build-cache
+        run: ./gradlew :fabric-1.20.1:build -x test --no-daemon
 
       - name: Upload JAR
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SoulLife-SMP-Fabric-1.20.1
           path: fabric-1.20.1/build/libs/SoulLife-SMP-*.jar
+          retention-days: 5
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabric-build-logs
+          path: fabric-1.20.1/build/
+          retention-days: 3
 
   release:
     name: Release All JARs
@@ -94,11 +93,13 @@ jobs:
         with:
           name: SoulLife-SMP-Forge-1.20.1
           path: release/
+
       - name: Download Fabric
         uses: actions/download-artifact@v4
         with:
           name: SoulLife-SMP-Fabric-1.20.1
           path: release/
+
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
