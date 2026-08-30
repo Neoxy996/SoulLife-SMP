@@ -7,7 +7,7 @@ on:
     branches: [ main, dev, 1.20.1 ]
   release:
     types: [ created ]
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
 
@@ -25,11 +25,11 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Grant execute permission to gradlew
+      - name: Grant execute permission
         run: chmod +x ./gradlew
 
-      - name: Build Forge
-        run: ./gradlew :forge-1.20.1:build -x test --no-daemon
+      - name: Build Forge (exclude Fabric)
+        run: ./gradlew :forge-1.20.1:build -x test --no-daemon -Dorg.gradle.jvmargs="-Xmx4g"
 
       - name: Upload JAR
         if: success()
@@ -38,14 +38,6 @@ jobs:
           name: SoulLife-SMP-Forge-1.20.1
           path: forge-1.20.1/build/libs/SoulLife-SMP-*.jar
           retention-days: 5
-
-      - name: Upload build logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: forge-build-logs
-          path: forge-1.20.1/build/
-          retention-days: 3
 
   build-fabric:
     name: Build Fabric 1.20.1
@@ -61,11 +53,11 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Grant execute permission to gradlew
+      - name: Grant execute permission
         run: chmod +x ./gradlew
 
       - name: Build Fabric
-        run: ./gradlew :fabric-1.20.1:build -x test --no-daemon
+        run: ./gradlew :fabric-1.20.1:build -x test --no-daemon -Dorg.gradle.jvmargs="-Xmx4g"
 
       - name: Upload JAR
         if: success()
@@ -74,14 +66,6 @@ jobs:
           name: SoulLife-SMP-Fabric-1.20.1
           path: fabric-1.20.1/build/libs/SoulLife-SMP-*.jar
           retention-days: 5
-
-      - name: Upload build logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: fabric-build-logs
-          path: fabric-1.20.1/build/
-          retention-days: 3
 
   release:
     name: Release All JARs
