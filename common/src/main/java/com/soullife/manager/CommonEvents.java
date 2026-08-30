@@ -19,6 +19,16 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
+        // إذا كان شبح ولم يدفع ايتم - ما تحسب الموتة
+        if (DeathManager.isGhost(player)) {
+            // جرّب الـ sacrifice
+            ItemStack required = SacrificeManager.getRequiredItem(player);
+            if (!SacrificeManager.hasItem(player, required)) {
+                // ما عنده الايتم - ما تحسب موتة
+                return;
+            }
+        }
+
         // Add death
         DeathManager.addDeaths(player, 1);
         int deaths = DeathManager.getDeathCount(player);
@@ -71,7 +81,7 @@ public class CommonEvents {
             player.setGameMode(GameType.SPECTATOR);
         } else if (DeathManager.isGhost(player)) {
             GhostManager.refreshGhostEffects(player);
-            player.setGameMode(GameType.SPECTATOR);
+            player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, not SPECTATOR
         }
 
         // Update Tab
@@ -87,8 +97,10 @@ public class CommonEvents {
 
         ItemStack required = SacrificeManager.getRequiredItem(player);
         if (!required.isEmpty() && pickedUp.is(required.getItem())) {
-            // Try sacrifice automatically
-            SacrificeManager.trySacrifice(player);
+            // Try sacrifice - if successful, return (item consumed)
+            if (SacrificeManager.trySacrifice(player)) {
+                return;
+            }
         }
     }
 
