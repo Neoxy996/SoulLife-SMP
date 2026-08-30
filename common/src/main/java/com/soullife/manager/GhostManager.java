@@ -2,14 +2,12 @@ package com.soullife.manager;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,35 +23,19 @@ public class GhostManager {
 
     // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
-        // Switch to Spectator
         player.setGameMode(GameType.SPECTATOR);
-
-        // Give White Leather Armor (can't remove)
         giveGhostArmor(player);
-
-        // Apply Effects
         applyGhostEffects(player);
-
-        // Play Wither Boss Sound (only for the player)
         playWitherSound(player);
-
         DeathManager.setGhost(player, true);
     }
 
     // ─── Remove Ghost State ───────────────────────────────────────────────────
     public static void removeGhostState(ServerPlayer player) {
-        // Switch back to Survival
         player.setGameMode(GameType.SURVIVAL);
-
-        // Remove Ghost Armor
         removeGhostArmor(player);
-
-        // Remove Effects
         removeGhostEffects(player);
-
-        // Play Totem Sound + Particles
         playTotemEffect(player);
-
         DeathManager.setGhost(player, false);
     }
 
@@ -75,7 +57,7 @@ public class GhostManager {
         for (int i = 0; i < 4; i++) {
             ItemStack armor = new ItemStack(armorItems[i]);
 
-            // Dye white (RGB 255,255,255)
+            // Dye white (RGB 255,255,255) using NBT
             net.minecraft.nbt.CompoundTag display = new net.minecraft.nbt.CompoundTag();
             display.putInt("color", 0xFFFFFF);
             armor.getOrCreateTagElement("display").merge(display);
@@ -102,11 +84,8 @@ public class GhostManager {
 
     // ─── Ghost Effects ────────────────────────────────────────────────────────
     public static void applyGhostEffects(ServerPlayer player) {
-        // Speed I - Infinite (999999 seconds)
         player.addEffect(new MobEffectInstance(
             MobEffects.MOVEMENT_SPEED, 999999 * 20, 0, false, false, true));
-
-        // Glowing - Infinite
         player.addEffect(new MobEffectInstance(
             MobEffects.GLOWING, 999999 * 20, 0, false, false, true));
     }
@@ -116,31 +95,27 @@ public class GhostManager {
         player.removeEffect(MobEffects.GLOWING);
     }
 
-    // ─── Wither Sound (only for the dying player) ─────────────────────────────
+    // ─── Wither Sound ─────────────────────────────────────────────────────────
     public static void playWitherSound(ServerPlayer player) {
         player.level().playSound(
             player,
             player.blockPosition(),
             SoundEvents.WITHER_SPAWN,
             SoundSource.MASTER,
-            1.0f,
-            1.0f
+            1.0f, 1.0f
         );
     }
 
     // ─── Totem Effect ─────────────────────────────────────────────────────────
     public static void playTotemEffect(ServerPlayer player) {
-        // Totem Sound
         player.level().playSound(
             null,
             player.blockPosition(),
             SoundEvents.TOTEM_USE,
             SoundSource.PLAYERS,
-            1.0f,
-            1.0f
+            1.0f, 1.0f
         );
 
-        // Totem Particles (server-side broadcast)
         if (player.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             serverLevel.sendParticles(
                 ParticleTypes.TOTEM_OF_UNDYING,
@@ -150,14 +125,14 @@ public class GhostManager {
         }
     }
 
-    // ─── Refresh Effects (called on login / respawn) ──────────────────────────
+    // ─── Refresh Effects ──────────────────────────────────────────────────────
     public static void refreshGhostEffects(ServerPlayer player) {
         if (DeathManager.isGhost(player)) {
             applyGhostEffects(player);
         }
     }
 
-    // ─── Check if armor is ghost armor ───────────────────────────────────────
+    // ─── Check if armor is ghost armor ────────────────────────────────────────
     public static boolean isGhostArmor(ItemStack stack) {
         if (stack.isEmpty()) return false;
         return stack.hasCustomHoverName() &&
