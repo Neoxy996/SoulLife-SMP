@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -58,8 +59,7 @@ public class GhostManager {
 
     // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
-        String[] slots = {"head", "chest", "legs", "feet"};
-        Items[] armorItems = {
+        Item[] armorItems = {
             Items.LEATHER_HELMET,
             Items.LEATHER_CHESTPLATE,
             Items.LEATHER_LEGGINGS,
