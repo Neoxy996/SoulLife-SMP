@@ -128,3 +128,4 @@ public class DeathManager {
             data.setGhost(tag.getBoolean("soullife_ghost"));
             data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
         }
+}
