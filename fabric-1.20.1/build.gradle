@@ -35,5 +35,15 @@ jar {
     from("src/main/resources") {
         include "fabric.mod.json"
     }
+    
     exclude 'META-INF/**'
+    exclude 'META-INF/*'
+}
+
+tasks.named('remapJar').configure {
+    injectAccessWidener = false
+}
+  remapped JAR
+tasks.named('remapJar').configure {
+    injectAccessWidener = false
 }
