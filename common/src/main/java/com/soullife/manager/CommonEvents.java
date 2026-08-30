@@ -1,101 +1,110 @@
 package com.soullife.manager;
 
 import com.soullife.util.MessageUtil;
+import com.soullife.util.ScoreboardManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 
 /**
  * SoulLife - CommonEvents
- * Server-side event handlers shared across all loaders.
+ * Shared event logic called by platform-specific event handlers.
  */
 public class CommonEvents {
 
-    // ── Death Event ───────────────────────────────────────────────────────────
+    /**
+     * Called when a player dies.
+     */
     public static void onPlayerDeath(ServerPlayer player) {
-        // If ghost dies without paying → don't count
-        if (GhostManager.isGhost(player)) {
+        // If already permanent spectator → do nothing
+        if (DeathManager.isPermanentSpectator(player)) return;
+
+        // Add death
+        DeathManager.addDeaths(player, 1);
+        int deaths = DeathManager.getDeathCount(player);
+
+        // Update Tab
+        ScoreboardManager.updateTabDisplay(player);
+
+        // Death 20 → Permanent Spectator
+        if (deaths >= 20) {
+            DeathManager.setPermanentSpectator(player, true);
+            GhostManager.applyGhostState(player);
+            MessageUtil.sendPermanentDeathMessage(player);
             return;
         }
 
-        int deaths = DeathManager.getDeathCount(player);
-        deaths++;
-        DeathManager.setDeaths(player, deaths);
+        // Normal death → Ghost mode
+        GhostManager.applyGhostState(player);
 
-        if (deaths >= 20) {
-            // Death 20: Permanent spectator forever
-            DeathManager.setPermanentSpectator(player, true);
-            GhostManager.applyGhostState(player);
-            player.setGameMode(GameType.SPECTATOR); // ONLY spectator on 20+
-            MessageUtil.sendPermanentDeathMessage(player);
-        } else {
-            // Deaths 1-19: Become ghost (STAY IN SURVIVAL!)
-            GhostManager.applyGhostState(player);
-            player.setGameMode(GameType.SURVIVAL); // ✅ SURVIVAL NOT SPECTATOR
-            
-            ItemStack required = SacrificeManager.getRequiredItem(player);
-            MessageUtil.sendDeathMessages(player, required);
-        }
+        // Get required sacrifice item
+        ItemStack required = SacrificeManager.getRequiredItem(player);
+
+        // Send messages
+        MessageUtil.sendDeathMessages(player, required);
     }
 
-    // ── Respawn Event ─────────────────────────────────────────────────────────
+    /**
+     * Called when player respawns (after ghost state).
+     */
     public static void onPlayerRespawn(ServerPlayer player) {
-        // Respawn just applies ghost state if needed
-        if (GhostManager.isGhost(player)) {
-            GhostManager.applyGhostState(player);
-            player.setGameMode(GameType.SURVIVAL); // ✅ SURVIVAL
-        }
-    }
-
-    // ── Login Event ───────────────────────────────────────────────────────────
-    public static void onPlayerLogin(ServerPlayer player) {
-        DeathManager.loadFromNBT(player, player.getPersistentData());
-        
         if (DeathManager.isPermanentSpectator(player)) {
-            // Only spectator if permanent
             player.setGameMode(GameType.SPECTATOR);
-            GhostManager.applyGhostState(player);
-        } else if (GhostManager.isGhost(player)) {
-            // Regular ghost: SURVIVAL
-            GhostManager.applyGhostState(player);
-            player.setGameMode(GameType.SURVIVAL); // ✅ SURVIVAL
+            return;
         }
+
+        if (DeathManager.isGhost(player)) {
+            // Re-apply ghost state after respawn
+            GhostManager.applyGhostState(player);
+        }
+
+        // Refresh Tab
+        ScoreboardManager.updateTabDisplay(player);
     }
 
-    // ── Item Pickup Event ─────────────────────────────────────────────────────
+    /**
+     * Called when player logs in.
+     */
+    public static void onPlayerLogin(ServerPlayer player) {
+        // Restore ghost state
+        if (DeathManager.isPermanentSpectator(player)) {
+            player.setGameMode(GameType.SPECTATOR);
+        } else if (DeathManager.isGhost(player)) {
+            GhostManager.refreshGhostEffects(player);
+            player.setGameMode(GameType.SPECTATOR);
+        }
+
+        // Update Tab
+        ScoreboardManager.updateTabDisplay(player);
+    }
+
+    /**
+     * Called on item pickup - check if it's the sacrifice item.
+     */
     public static void onItemPickup(ServerPlayer player, ItemStack pickedUp) {
-        if (!GhostManager.isGhost(player)) return;
-        if (pickedUp.isEmpty()) return;
+        if (!DeathManager.isGhost(player)) return;
+        if (DeathManager.isPermanentSpectator(player)) return;
 
         ItemStack required = SacrificeManager.getRequiredItem(player);
-        
-        // ✅ Check if this is the required sacrifice item
-        if (ItemStack.isSameItemSameTags(pickedUp, required)) {
-            // Remove from inventory
-            pickedUp.shrink(1);
-            
-            // ✅ Revive player to SURVIVAL
-            GhostManager.removeGhostState(player);
-            player.setGameMode(GameType.SURVIVAL);
-            MessageUtil.broadcastRevival(player);
+        if (!required.isEmpty() && pickedUp.is(required.getItem())) {
+            // Try sacrifice automatically
+            SacrificeManager.trySacrifice(player);
         }
     }
 
-    // ── Block Break Event ─────────────────────────────────────────────────────
+    /**
+     * Called when player tries to break a block (prevent in ghost mode).
+     */
     public static boolean onBlockBreak(ServerPlayer player) {
-        // ✅ Ghosts can't break blocks
-        if (GhostManager.isGhost(player)) {
-            return true; // Cancel the break
-        }
-        return false;
+        // Ghost can't break blocks
+        return DeathManager.isGhost(player);
     }
 
-    // ── Block Place Event ─────────────────────────────────────────────────────
+    /**
+     * Called when player tries to place a block (prevent in ghost mode).
+     */
     public static boolean onBlockPlace(ServerPlayer player) {
-        // ✅ Ghosts can't place blocks
-        if (GhostManager.isGhost(player)) {
-            return true; // Cancel the place
-        }
-        return false;
+        // Ghost can't place blocks
+        return DeathManager.isGhost(player);
     }
 }
