@@ -41,20 +41,14 @@ public class GhostManager {
 
     // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
-        // Ghost head (player head with custom texture)
-        ItemStack ghostHead = new ItemStack(Items.PLAYER_HEAD);
+        // Dragon head (ghost head) - can't remove
+        ItemStack ghostHead = new ItemStack(Items.DRAGON_HEAD);
         
         // Add Binding Curse (can't remove)
         ghostHead.enchant(Enchantments.BINDING_CURSE, 1);
         
         // Custom name
         ghostHead.setHoverName(Component.literal("Ghost Head").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
-        
-        // Apply ghost head NBT data for custom texture
-        net.minecraft.nbt.CompoundTag tag = ghostHead.getOrCreateTag();
-        net.minecraft.nbt.CompoundTag skullOwner = new net.minecraft.nbt.CompoundTag();
-        skullOwner.putString("Name", "Ghost");
-        tag.put("SkullOwner", skullOwner);
         
         player.setItemSlot(EquipmentSlot.HEAD, ghostHead);
     }
