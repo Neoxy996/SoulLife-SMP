@@ -2,11 +2,12 @@ package com.soullife.fabric;
 
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
+import com.soullife.manager.ItemUseManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,16 +64,26 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Item Pickup - monitor inventory each tick
-        ServerPlayerEvents.TICK.register((player) -> {
-            if (player instanceof ServerPlayer serverPlayer && DeathManager.isGhost(serverPlayer)) {
-                // Check each item in inventory
-                for (ItemStack stack : serverPlayer.getInventory().items) {
-                    if (!stack.isEmpty()) {
-                        CommonEvents.onItemPickup(serverPlayer, stack);
+        // Item Pickup & Use restriction - monitor inventory each tick
+        ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
+                if (DeathManager.isGhost(serverPlayer)) {
+                    // Check sacrifice items
+                    for (ItemStack stack : serverPlayer.getInventory().items) {
+                        if (!stack.isEmpty()) {
+                            CommonEvents.onItemPickup(serverPlayer, stack);
+                        }
+                    }
+                    
+                    // Prevent restricted item usage
+                    ItemStack mainHand = serverPlayer.getMainHandItem();
+                    if (!mainHand.isEmpty() && !ItemUseManager.canUseItem(serverPlayer, mainHand)) {
+                        serverPlayer.drop(mainHand, true);
+                        serverPlayer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                     }
                 }
             }
         });
     }
 }
+
