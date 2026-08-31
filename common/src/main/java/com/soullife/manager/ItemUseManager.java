@@ -9,9 +9,9 @@ import net.minecraft.world.item.Items;
 public class ItemUseManager {
 
     public static boolean canUseItem(ServerPlayer player, ItemStack item) {
-        // Ghost restricted items
+        // Ghost restricted items only
         if (DeathManager.isGhost(player)) {
-            // Block bucket usage
+            // Block bucket usage (water/lava)
             if (item.getItem() instanceof BucketItem) return false;
             
             // Block flint and steel (fire)
@@ -20,7 +20,7 @@ public class ItemUseManager {
             // Block ender pearl
             if (item.is(Items.ENDER_PEARL)) return false;
             
-            // Allow everything else (bow, food, etc)
+            // Allow everything else: bow, food, chests, doors, etc
         }
         
         return true;
