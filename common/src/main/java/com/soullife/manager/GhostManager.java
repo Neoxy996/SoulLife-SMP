@@ -41,38 +41,22 @@ public class GhostManager {
 
     // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
-        Item[] armorItems = {
-            Items.LEATHER_HELMET,
-            Items.LEATHER_CHESTPLATE,
-            Items.LEATHER_LEGGINGS,
-            Items.LEATHER_BOOTS
-        };
-        EquipmentSlot[] equipSlots = {
-            EquipmentSlot.HEAD,
-            EquipmentSlot.CHEST,
-            EquipmentSlot.LEGS,
-            EquipmentSlot.FEET
-        };
-
-        for (int i = 0; i < 4; i++) {
-            ItemStack armor = new ItemStack(armorItems[i]);
-
-            // Dye white (RGB 255,255,255) using NBT
-            net.minecraft.nbt.CompoundTag display = new net.minecraft.nbt.CompoundTag();
-            display.putInt("color", 0xFFFFFF);
-            armor.getOrCreateTagElement("display").merge(display);
-
-            // Add Binding Curse (can't remove)
-            armor.enchant(Enchantments.BINDING_CURSE, 1);
-
-            // Add Unbreaking III
-            armor.enchant(Enchantments.UNBREAKING, 3);
-
-            // Custom name
-            armor.setHoverName(Component.literal("§7Ghost Armor").withStyle(ChatFormatting.ITALIC));
-
-            player.setItemSlot(equipSlots[i], armor);
-        }
+        // Ghost head (player head with custom texture)
+        ItemStack ghostHead = new ItemStack(Items.PLAYER_HEAD);
+        
+        // Add Binding Curse (can't remove)
+        ghostHead.enchant(Enchantments.BINDING_CURSE, 1);
+        
+        // Custom name
+        ghostHead.setHoverName(Component.literal("Ghost Head").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+        
+        // Apply ghost head NBT data for custom texture
+        net.minecraft.nbt.CompoundTag tag = ghostHead.getOrCreateTag();
+        net.minecraft.nbt.CompoundTag skullOwner = new net.minecraft.nbt.CompoundTag();
+        skullOwner.putString("Name", "Ghost");
+        tag.put("SkullOwner", skullOwner);
+        
+        player.setItemSlot(EquipmentSlot.HEAD, ghostHead);
     }
 
     private static void removeGhostArmor(ServerPlayer player) {
