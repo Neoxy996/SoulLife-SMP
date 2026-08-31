@@ -23,7 +23,7 @@ public class GhostManager {
 
     // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
-        player.setGameMode(GameType.SPECTATOR);
+        player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, NOT SPECTATOR
         giveGhostArmor(player);
         applyGhostEffects(player);
         playWitherSound(player);
