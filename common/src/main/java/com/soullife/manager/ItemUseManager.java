@@ -3,8 +3,8 @@ package com.soullife.manager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.FlintAndSteelItem;
-import net.minecraft.world.item.EnderPearlItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class ItemUseManager {
 
@@ -18,7 +18,7 @@ public class ItemUseManager {
             if (item.getItem() instanceof FlintAndSteelItem) return false;
             
             // Block ender pearl
-            if (item.getItem() instanceof EnderPearlItem) return false;
+            if (item.is(Items.ENDER_PEARL)) return false;
             
             // Allow everything else (bow, food, etc)
         }
