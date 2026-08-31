@@ -2,6 +2,7 @@ package com.soullife.forge;
 
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
+import com.soullife.manager.ItemUseManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -55,8 +56,10 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerLoad(PlayerEvent.LoadFromFile event) {
-        if (event.getEntity() instanceof ServerPlayer player)
-            DeathManager.loadAllFromNBT(player, player.getPersistentData());
+    public static void onUseItem(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            if (!ItemUseManager.canUseItem(player, event.getItemStack())) {
+                event.setCanceled(true);
+            }
+        }
     }
-}
