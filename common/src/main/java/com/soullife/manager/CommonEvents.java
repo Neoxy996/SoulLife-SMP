@@ -19,12 +19,15 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
-        // إذا كان شبح ولم يدفع ايتم - ما تحسب الموتة
+        // Check for Totem of Undying - don't count as death if has totem
+        if (player.getInventory().contains(new ItemStack(Items.TOTEM_OF_UNDYING))) {
+            return;
+        }
+
+        // If ghost and didn't pay item - don't count as death
         if (DeathManager.isGhost(player)) {
-            // جرّب الـ sacrifice
             ItemStack required = SacrificeManager.getRequiredItem(player);
             if (!SacrificeManager.hasItem(player, required)) {
-                // ما عنده الايتم - ما تحسب موتة
                 return;
             }
         }
@@ -36,11 +39,10 @@ public class CommonEvents {
         // Update Tab
         ScoreboardManager.updateTabDisplay(player);
 
-        // Death 20 → Permanent Spectator
+        // Death 20 → Still ghost (need dragon egg to revive)
         if (deaths >= 20) {
-            DeathManager.setPermanentSpectator(player, true);
             GhostManager.applyGhostState(player);
-            MessageUtil.sendPermanentDeathMessage(player);
+            MessageUtil.sendDeathMessages(player, SacrificeManager.getRequiredItem(player));
             return;
         }
 
@@ -112,11 +114,19 @@ public class CommonEvents {
         return DeathManager.isGhost(player);
     }
 
-    /**
-     * Called when player tries to place a block (prevent in ghost mode).
-     */
     public static boolean onBlockPlace(ServerPlayer player) {
-        // Ghost can't place blocks
-        return DeathManager.isGhost(player);
+        // Ghost can't place blocks - return item to player
+        if (DeathManager.isGhost(player)) {
+            ItemStack heldItem = player.getMainHandItem();
+            if (!heldItem.isEmpty()) {
+                // Add item back to inventory
+                if (!player.getInventory().add(heldItem.copy())) {
+                    // If inventory full, drop it
+                    player.drop(heldItem.copy(), false);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }
