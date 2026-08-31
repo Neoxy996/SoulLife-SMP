@@ -20,11 +20,6 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
-        // Check for Totem of Undying - don't count as death if has totem
-        if (player.getInventory().contains(new ItemStack(Items.TOTEM_OF_UNDYING))) {
-            return;
-        }
-
         // If ghost and didn't pay item - don't count as death
         if (DeathManager.isGhost(player)) {
             ItemStack required = SacrificeManager.getRequiredItem(player);
@@ -120,10 +115,14 @@ public class CommonEvents {
         if (DeathManager.isGhost(player)) {
             ItemStack heldItem = player.getMainHandItem();
             if (!heldItem.isEmpty()) {
+                // Create single item to return
+                ItemStack singleItem = heldItem.copy();
+                singleItem.setCount(1);
+                
                 // Add item back to inventory
-                if (!player.getInventory().add(heldItem.copy())) {
+                if (!player.getInventory().add(singleItem)) {
                     // If inventory full, drop it
-                    player.drop(heldItem.copy(), false);
+                    player.drop(singleItem, false);
                 }
             }
             return true;
