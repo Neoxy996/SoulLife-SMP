@@ -56,6 +56,22 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            // Check if totem in offhand
+            ItemStack offHand = player.getOffhandItem();
+            if (offHand.is(Items.TOTEM_OF_UNDYING)) {
+                // Totem will protect - cancel death event
+                event.setCanceled(true);
+                return;
+            }
+            
+            // Otherwise call common death handler
+            CommonEvents.onPlayerDeath(player);
+        }
+    }
+
+    @SubscribeEvent
     public static void onUseItem(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (!ItemUseManager.canUseItem(player, event.getItemStack())) {
