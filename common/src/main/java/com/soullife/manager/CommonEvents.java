@@ -35,10 +35,18 @@ public class CommonEvents {
         // Update Tab
         ScoreboardManager.updateTabDisplay(player);
 
-        // Death 20 → Still ghost (need dragon egg to revive)
+        // Death 21+ → Permanent Spectator
+        if (deaths >= 21) {
+            DeathManager.setPermanentSpectator(player, true);
+            player.setGameMode(GameType.SPECTATOR);
+            MessageUtil.sendPermanentDeathMessage(player);
+            return;
+        }
+
+        // Death 20 → Still ghost (need dragon egg to survive)
         if (deaths >= 20) {
             GhostManager.applyGhostState(player);
-            MessageUtil.sendDeathMessages(player, SacrificeManager.getRequiredItem(player));
+            MessageUtil.sendDeathMessages(player, new ItemStack(Items.DRAGON_EGG));
             return;
         }
 
@@ -111,21 +119,9 @@ public class CommonEvents {
     }
 
     public static boolean onBlockPlace(ServerPlayer player) {
-        // Ghost can't place blocks - return item to player
+        // Ghost can't place blocks at all (like adventure mode)
         if (DeathManager.isGhost(player)) {
-            ItemStack heldItem = player.getMainHandItem();
-            if (!heldItem.isEmpty()) {
-                // Create single item to return
-                ItemStack singleItem = heldItem.copy();
-                singleItem.setCount(1);
-                
-                // Add item back to inventory
-                if (!player.getInventory().add(singleItem)) {
-                    // If inventory full, drop it
-                    player.drop(singleItem, false);
-                }
-            }
-            return true;
+            return true;  // Prevent block placement
         }
         return false;
     }
