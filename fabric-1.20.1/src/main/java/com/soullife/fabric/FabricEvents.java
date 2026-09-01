@@ -58,9 +58,8 @@ public class FabricEvents {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 // Only prevent block PLACEMENT, allow opening containers
-                // Check if trying to place a block
                 ItemStack heldItem = serverPlayer.getItemInHand(hand);
-                if (!heldItem.isEmpty() && heldItem.getItem().isBlockItem()) {
+                if (!heldItem.isEmpty()) {
                     if (CommonEvents.onBlockPlace(serverPlayer)) {
                         return InteractionResult.FAIL;
                     }
