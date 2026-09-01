@@ -2,10 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " E ",
-    "CNC",
-    "III",
-    "III"
+    "CEC",
+    "ENE",
+    "CIC"
   ],
   "key": {
     "E": { "item": "minecraft:end_crystal" },
