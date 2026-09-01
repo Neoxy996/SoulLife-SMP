@@ -136,4 +136,4 @@ public class DeathManager {
             data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
         }
     }
-}
+    }
