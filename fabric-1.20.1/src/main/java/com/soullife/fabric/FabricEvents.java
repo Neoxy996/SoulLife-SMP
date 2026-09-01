@@ -54,13 +54,16 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Block Place - prevent ghost from placing blocks
+        // Block Place - prevent ghost from placing blocks ONLY
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
-                // Allow opening chests, doors, shulker, ender chest
-                // Only prevent placing blocks via onBlockPlace
-                if (CommonEvents.onBlockPlace(serverPlayer)) {
-                    return InteractionResult.FAIL;
+                // Only prevent block PLACEMENT, allow opening containers
+                // Check if trying to place a block
+                ItemStack heldItem = serverPlayer.getItemInHand(hand);
+                if (!heldItem.isEmpty() && heldItem.getItem().isBlockItem()) {
+                    if (CommonEvents.onBlockPlace(serverPlayer)) {
+                        return InteractionResult.FAIL;
+                    }
                 }
             }
             return InteractionResult.PASS;
