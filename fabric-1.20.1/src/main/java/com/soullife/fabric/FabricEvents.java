@@ -75,11 +75,11 @@ public class FabricEvents {
                         }
                     }
                     
-                    // Prevent restricted item usage
+                    // Prevent restricted item usage - don't allow usage
                     ItemStack mainHand = serverPlayer.getMainHandItem();
                     if (!mainHand.isEmpty() && !ItemUseManager.canUseItem(serverPlayer, mainHand)) {
-                        serverPlayer.drop(mainHand, true);
-                        serverPlayer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                        // Don't use item, but don't delete it either (adventure mode)
+                        // Item stays in hand, just can't be used
                     }
                 }
             }
