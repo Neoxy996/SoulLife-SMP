@@ -57,6 +57,8 @@ public class FabricEvents {
         // Block Place - prevent ghost from placing blocks
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
+                // Allow opening chests, doors, shulker, ender chest
+                // Only prevent placing blocks via onBlockPlace
                 if (CommonEvents.onBlockPlace(serverPlayer)) {
                     return InteractionResult.FAIL;
                 }
