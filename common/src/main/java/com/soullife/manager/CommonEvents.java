@@ -20,9 +20,11 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
-        // Check if totem protected (offhand totem or just used)
+        // Check if totem protected (EITHER hand)
         ItemStack offHand = player.getOffhandItem();
-        if (offHand.is(Items.TOTEM_OF_UNDYING)) {
+        ItemStack mainHand = player.getMainHandItem();
+        
+        if (offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING)) {
             // Totem will protect - don't count as death
             return;
         }
