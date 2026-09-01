@@ -20,7 +20,7 @@ public class ItemUseManager {
             // Block ender pearl
             if (item.is(Items.ENDER_PEARL)) return false;
             
-            // Allow everything else: bow, food, chests, doors, etc
+            // Allow everything else: bow, food, chests, shulker, ender chest, etc
         }
         
         return true;
