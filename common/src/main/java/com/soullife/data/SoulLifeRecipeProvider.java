@@ -15,7 +15,7 @@ public class SoulLifeRecipeProvider extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> recipeOutput) {
+    public void buildRecipes(Consumer<FinishedRecipe> recipeOutput) {
         // Dragon Egg Recipe
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.DRAGON_EGG)
             .pattern("cec")
