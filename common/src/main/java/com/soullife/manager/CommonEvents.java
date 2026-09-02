@@ -129,8 +129,9 @@ public class CommonEvents {
 
     public static boolean onBlockPlace(ServerPlayer player) {
         // Ghost can't place blocks at all (like adventure mode)
+        // But CAN open containers (chests, shulker, crafting, doors, etc)
         if (DeathManager.isGhost(player)) {
-            return true;  // Prevent block placement
+            return true;  // Prevent PLACEMENT only
         }
         return false;
     }
