@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,20 +48,6 @@ public class FabricEvents {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (CommonEvents.onBlockBreak(serverPlayer)) {
                     return InteractionResult.FAIL;
-                }
-            }
-            return InteractionResult.PASS;
-        });
-
-        // Block Place - prevent ghost from placing blocks ONLY
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player instanceof ServerPlayer serverPlayer) {
-                // Only prevent block PLACEMENT, allow opening containers
-                ItemStack heldItem = serverPlayer.getItemInHand(hand);
-                if (!heldItem.isEmpty()) {
-                    if (CommonEvents.onBlockPlace(serverPlayer)) {
-                        return InteractionResult.FAIL;
-                    }
                 }
             }
             return InteractionResult.PASS;
