@@ -95,7 +95,6 @@ public class ForgeEvents {
         
         return false;
     }
-}
 
     @SubscribeEvent
     public static void onPlayerSave(PlayerEvent.SaveToFile event) {
