@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CEC",
+    "ENE",
+    "CIC"
+  ],
+  "key": {
+    "C": [
+      {
+        "item": "minecraft:crying_obsidian"
+      }
+    ],
+    "E": [
+      {
+        "item": "minecraft:end_crystal"
+      }
+    ],
+    "N": [
+      {
+        "item": "minecraft:nether_star"
+      }
+    ],
+    "I": [
+      {
+        "item": "minecraft:netherite_ingot"
+      }
+    ]
+  },
+  "result": {
+    "item": "minecraft:dragon_egg"
+  }
+}
