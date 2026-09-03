@@ -106,6 +106,7 @@ public class FabricEvents {
         if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
         if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
         if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
         if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
         
         // Doors & Gates
@@ -116,7 +117,6 @@ public class FabricEvents {
         // Other interactive blocks
         if (block instanceof net.minecraft.world.level.block.LecternBlock) return true;
         if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.CartAssemblerBlock) return true;
         
         return false;
     }
