@@ -81,6 +81,7 @@ public class ForgeEvents {
         if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
         if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
         if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
         if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
         
         // Doors & Gates
@@ -94,6 +95,7 @@ public class ForgeEvents {
         
         return false;
     }
+}
 
     @SubscribeEvent
     public static void onPlayerSave(PlayerEvent.SaveToFile event) {
