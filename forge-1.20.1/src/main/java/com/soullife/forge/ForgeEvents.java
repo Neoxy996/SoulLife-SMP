@@ -61,9 +61,38 @@ public class ForgeEvents {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (DeathManager.isGhost(player)) {
-                event.setCanceled(true);  // منع وضع البلوك
+                // Allow opening containers but prevent placement
+                net.minecraft.world.level.block.Block block = event.getPlacedBlock().getBlock();
+                
+                if (!isAllowedForGhost(block)) {
+                    event.setCanceled(true);  // منع وضع البلوك
+                }
             }
         }
+    }
+
+    private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
+        // Containers
+        if (block instanceof net.minecraft.world.level.block.ChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.ShulkerBoxBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.EnderChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.CraftingTableBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
+        
+        // Doors & Gates
+        if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FenceGateBlock) return true;
+        
+        // Other interactive blocks
+        if (block instanceof net.minecraft.world.level.block.LecternBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
+        
+        return false;
     }
 
     @SubscribeEvent
