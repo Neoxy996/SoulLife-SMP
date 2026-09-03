@@ -59,8 +59,11 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player)
-            if (CommonEvents.onBlockPlace(player)) event.setCanceled(true);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            if (DeathManager.isGhost(player)) {
+                event.setCanceled(true);  // منع وضع البلوك
+            }
+        }
     }
 
     @SubscribeEvent
