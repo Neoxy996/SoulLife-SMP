@@ -54,11 +54,21 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Block Place - prevent ghost from placing blocks ONLY
+        // Block Place - prevent ghost from placing blocks ONLY (allow opening containers)
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (DeathManager.isGhost(serverPlayer)) {
-                    return InteractionResult.FAIL;  // منع وضع البلوك
+                    // Allow opening containers but prevent placement
+                    // Check if it's a placement action vs opening
+                    net.minecraft.world.level.block.Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+                    
+                    // List of allowed blocks for ghost (containers, doors, etc)
+                    if (isAllowedForGhost(block)) {
+                        return InteractionResult.PASS;  // Allow interaction
+                    }
+                    
+                    // Block placement attempt
+                    return InteractionResult.FAIL;
                 }
             }
             return InteractionResult.PASS;
@@ -84,6 +94,31 @@ public class FabricEvents {
                 }
             }
         });
+    }
+
+    private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
+        // Containers
+        if (block instanceof net.minecraft.world.level.block.ChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.ShulkerBoxBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.EnderChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.CraftingTableBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
+        
+        // Doors & Gates
+        if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FenceGateBlock) return true;
+        
+        // Other interactive blocks
+        if (block instanceof net.minecraft.world.level.block.LecternBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.CartAssemblerBlock) return true;
+        
+        return false;
     }
 }
 
