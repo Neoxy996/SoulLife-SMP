@@ -4,15 +4,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 
 public class ArmorRestoreManager {
 
     public static void saveOriginalArmor(ServerPlayer player) {
-        CompoundTag playerTag = player.serializeNBT();
+        CompoundTag persistentData = player.getPersistentData();
         CompoundTag armorTag = new CompoundTag();
         
-        // Save original armor to NBT
+        // Save original armor
         ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
@@ -23,14 +22,14 @@ public class ArmorRestoreManager {
         if (!legs.isEmpty()) armorTag.put("Legs", legs.save(new CompoundTag()));
         if (!feet.isEmpty()) armorTag.put("Feet", feet.save(new CompoundTag()));
         
-        playerTag.put("SoulLife:OriginalArmor", armorTag);
+        persistentData.put("SoulLife:OriginalArmor", armorTag);
     }
 
     public static void restoreOriginalArmor(ServerPlayer player) {
-        CompoundTag playerTag = player.serializeNBT();
+        CompoundTag persistentData = player.getPersistentData();
         
-        if (playerTag.contains("SoulLife:OriginalArmor")) {
-            CompoundTag armorTag = playerTag.getCompound("SoulLife:OriginalArmor");
+        if (persistentData.contains("SoulLife:OriginalArmor")) {
+            CompoundTag armorTag = persistentData.getCompound("SoulLife:OriginalArmor");
             
             if (armorTag.contains("Head")) {
                 ItemStack head = ItemStack.of(armorTag.getCompound("Head"));
