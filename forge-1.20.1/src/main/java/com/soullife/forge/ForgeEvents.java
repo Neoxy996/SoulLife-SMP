@@ -60,14 +60,12 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onItemPickup(EntityItemPickupEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ItemStack item = event.getItem().getItem();
             if (DeathManager.isGhost(player)) {
-                // Check if it's the required sacrifice item
                 ItemStack required = SacrificeManager.getRequiredItem(player);
-                if (!required.isEmpty() && item.is(required.getItem())) {
-                    if (SacrificeManager.trySacrifice(player, item)) {
-                        // Sacrifice successful
-                    }
+                ItemStack pickedUp = event.getItem().getItem();
+                
+                if (!required.isEmpty() && pickedUp.is(required.getItem())) {
+                    SacrificeManager.trySacrifice(player, pickedUp);
                 }
             }
         }
