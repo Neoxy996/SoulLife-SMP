@@ -28,6 +28,16 @@ public class ForgeEvents {
                 return;
             }
             
+            // If ghost and didn't pay item - don't count as death
+            if (DeathManager.isGhost(player)) {
+                ItemStack required = SacrificeManager.getRequiredItem(player);
+                if (!SacrificeManager.hasItem(player, required)) {
+                    // Ghost died without paying - cancel death (will be paid later via pickup)
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+            
             // Otherwise call common death handler
             CommonEvents.onPlayerDeath(player);
         }
@@ -47,8 +57,16 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onItemPickup(EntityItemPickupEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player)
-            CommonEvents.onItemPickup(player, event.getItem().getItem());
+        if (event.getEntity() instanceof ServerPlayer player) {
+            ItemStack item = event.getItem().getItem();
+            if (DeathManager.isGhost(player)) {
+                // Check if it's the required sacrifice item
+                if (SacrificeManager.trySacrifice(player, item)) {
+                    // Sacrifice successful - remove ghost state
+                    GhostManager.removeGhostState(player);
+                }
+            }
+        }
     }
 
     @SubscribeEvent
