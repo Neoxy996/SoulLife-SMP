@@ -63,9 +63,11 @@ public class ForgeEvents {
             ItemStack item = event.getItem().getItem();
             if (DeathManager.isGhost(player)) {
                 // Check if it's the required sacrifice item
-                if (SacrificeManager.trySacrifice(player, item)) {
-                    // Sacrifice successful - remove ghost state
-                    GhostManager.removeGhostState(player);
+                ItemStack required = SacrificeManager.getRequiredItem(player);
+                if (!required.isEmpty() && item.is(required.getItem())) {
+                    if (SacrificeManager.trySacrifice(player, item)) {
+                        // Sacrifice successful
+                    }
                 }
             }
         }
