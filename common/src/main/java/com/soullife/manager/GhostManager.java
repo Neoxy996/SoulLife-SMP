@@ -1,5 +1,6 @@
 package com.soullife.manager;
 
+import com.soullife.forge.ArmorRestoreManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
