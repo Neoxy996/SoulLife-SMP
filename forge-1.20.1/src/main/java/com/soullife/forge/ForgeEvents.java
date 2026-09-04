@@ -2,7 +2,9 @@ package com.soullife.forge;
 
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
+import com.soullife.manager.GhostManager;
 import com.soullife.manager.ItemUseManager;
+import com.soullife.manager.SacrificeManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
