@@ -23,6 +23,9 @@ public class GhostManager {
 
     // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
+        // Save original armor before replacing
+        ArmorRestoreManager.saveOriginalArmor(player);
+        
         player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, NOT SPECTATOR
         giveGhostArmor(player);
         applyGhostEffects(player);
@@ -34,6 +37,10 @@ public class GhostManager {
     public static void removeGhostState(ServerPlayer player) {
         player.setGameMode(GameType.SURVIVAL);
         removeGhostArmor(player);
+        
+        // Restore original armor
+        ArmorRestoreManager.restoreOriginalArmor(player);
+        
         removeGhostEffects(player);
         playTotemEffect(player);
         DeathManager.setGhost(player, false);
