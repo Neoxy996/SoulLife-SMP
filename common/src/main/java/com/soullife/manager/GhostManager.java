@@ -23,6 +23,14 @@ public class GhostManager {
 
     // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
+        try {
+            // Try to save armor (Forge only - will fail in Fabric)
+            Class<?> armorManager = Class.forName("com.soullife.forge.ArmorRestoreManager");
+            armorManager.getMethod("saveOriginalArmor", ServerPlayer.class).invoke(null, player);
+        } catch (Exception e) {
+            // Fabric doesn't have this - skip
+        }
+        
         player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, NOT SPECTATOR
         giveGhostArmor(player);
         applyGhostEffects(player);
@@ -34,6 +42,15 @@ public class GhostManager {
     public static void removeGhostState(ServerPlayer player) {
         player.setGameMode(GameType.SURVIVAL);
         removeGhostArmor(player);
+        
+        try {
+            // Try to restore armor (Forge only - will fail in Fabric)
+            Class<?> armorManager = Class.forName("com.soullife.forge.ArmorRestoreManager");
+            armorManager.getMethod("restoreOriginalArmor", ServerPlayer.class).invoke(null, player);
+        } catch (Exception e) {
+            // Fabric doesn't have this - skip
+        }
+        
         removeGhostEffects(player);
         playTotemEffect(player);
         DeathManager.setGhost(player, false);
