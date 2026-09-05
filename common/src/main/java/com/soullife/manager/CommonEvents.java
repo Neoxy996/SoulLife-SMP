@@ -20,6 +20,8 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
+        dropOriginalArmor(player);
+
         // Check if totem protected (EITHER hand)
         ItemStack offHand = player.getOffhandItem();
         ItemStack mainHand = player.getMainHandItem();
@@ -136,3 +138,31 @@ public class CommonEvents {
         return false;
     }
 }
+
+    public static boolean onItemDrop(ServerPlayer player, ItemStack item) {
+        // Prevent dropping ghost armor
+        if (item.hasCustomHoverName()) {
+            String name = item.getHoverName().getString();
+            if (name.contains("Ghost Head") || name.contains("Ghost Armor")) {
+                return true;  // Prevent drop
+            }
+        }
+        return false;
+    }
+
+    private static void dropOriginalArmor(ServerPlayer player) {
+        // Drop all equipped armor
+        net.minecraft.world.entity.EquipmentSlot[] slots = {
+            net.minecraft.world.entity.EquipmentSlot.HEAD,
+            net.minecraft.world.entity.EquipmentSlot.CHEST,
+            net.minecraft.world.entity.EquipmentSlot.LEGS,
+            net.minecraft.world.entity.EquipmentSlot.FEET
+        };
+        
+        for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+            ItemStack armor = player.getItemBySlot(slot);
+            if (!armor.isEmpty()) {
+                player.drop(armor, true);
+            }
+        }
+    }
