@@ -3,6 +3,7 @@ package com.soullife.fabric;
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
 import com.soullife.manager.ItemUseManager;
+import com.soullife.manager.SacrificeManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -81,7 +82,10 @@ public class FabricEvents {
                     // Check sacrifice items
                     for (ItemStack stack : serverPlayer.getInventory().items) {
                         if (!stack.isEmpty()) {
-                            CommonEvents.onItemPickup(serverPlayer, stack);
+                            ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
+                            if (!required.isEmpty() && stack.is(required.getItem())) {
+                                SacrificeManager.trySacrifice(serverPlayer);
+                            }
                         }
                     }
                     
