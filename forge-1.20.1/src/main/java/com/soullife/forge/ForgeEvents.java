@@ -65,7 +65,7 @@ public class ForgeEvents {
                 ItemStack pickedUp = event.getItem().getItem();
                 
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
-                    SacrificeManager.trySacrifice(player, pickedUp);
+                    SacrificeManager.trySacrifice(player);
                 }
             }
         }
