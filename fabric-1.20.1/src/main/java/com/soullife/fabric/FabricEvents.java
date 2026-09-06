@@ -73,6 +73,28 @@ public class FabricEvents {
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
                 if (DeathManager.isGhost(serverPlayer)) {
+                    // Remove ghost armor from ground if picked up
+                    net.minecraft.world.entity.EquipmentSlot[] slots = {
+                        net.minecraft.world.entity.EquipmentSlot.HEAD,
+                        net.minecraft.world.entity.EquipmentSlot.CHEST,
+                        net.minecraft.world.entity.EquipmentSlot.LEGS,
+                        net.minecraft.world.entity.EquipmentSlot.FEET
+                    };
+                    
+                    for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+                        ItemStack equipped = serverPlayer.getItemBySlot(slot);
+                        if (equipped.isEmpty() || !isGhostArmor(equipped)) {
+                            continue;
+                        }
+                        // If we find ghost armor not on server player, remove it from inventory
+                        for (int i = 0; i < serverPlayer.getInventory().getContainerSize(); i++) {
+                            ItemStack stack = serverPlayer.getInventory().getItem(i);
+                            if (!stack.isEmpty() && isGhostArmor(stack)) {
+                                serverPlayer.getInventory().removeItem(stack);
+                            }
+                        }
+                    }
+                    
                     // Check sacrifice items
                     for (ItemStack stack : serverPlayer.getInventory().items) {
                         if (!stack.isEmpty()) {
@@ -105,5 +127,13 @@ public class FabricEvents {
         if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
         
         return false;
+    }
+}
+
+    private static boolean isGhostArmor(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        if (!stack.hasCustomHoverName()) return false;
+        String name = stack.getHoverName().getString();
+        return name.contains("Ghost") || name.contains("Skeleton");
     }
 }
