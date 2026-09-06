@@ -139,7 +139,7 @@ public class CommonEvents {
     }
 
     public static void dropOriginalArmor(ServerPlayer player) {
-        // Drop all equipped armor
+        // Drop only original armor, NOT ghost armor
         net.minecraft.world.entity.EquipmentSlot[] slots = {
             net.minecraft.world.entity.EquipmentSlot.HEAD,
             net.minecraft.world.entity.EquipmentSlot.CHEST,
@@ -149,9 +149,17 @@ public class CommonEvents {
         
         for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
             ItemStack armor = player.getItemBySlot(slot);
-            if (!armor.isEmpty()) {
+            // Don't drop ghost armor - check if it's ghost armor
+            if (!armor.isEmpty() && !isGhostArmor(armor)) {
                 player.drop(armor, true);
             }
         }
+    }
+
+    private static boolean isGhostArmor(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        if (!stack.hasCustomHoverName()) return false;
+        String name = stack.getHoverName().getString();
+        return name.contains("Ghost");
     }
 }
