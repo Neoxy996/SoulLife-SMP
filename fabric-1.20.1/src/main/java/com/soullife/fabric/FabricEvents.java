@@ -73,8 +73,9 @@ public class FabricEvents {
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
                 if (DeathManager.isGhost(serverPlayer)) {
-                    // Remove ghost armor from inventory if picked up
-                    for (int i = 0; i < serverPlayer.getInventory().getContainerSize(); i++) {
+                    // Remove ghost armor from inventory (items picked up from ground)
+                    // But NOT from equipment (armor slots)
+                    for (int i = 0; i < 36; i++) {  // Only inventory, not armor slots
                         ItemStack stack = serverPlayer.getInventory().getItem(i);
                         if (!stack.isEmpty() && isGhostArmor(stack)) {
                             serverPlayer.getInventory().removeItem(stack);
