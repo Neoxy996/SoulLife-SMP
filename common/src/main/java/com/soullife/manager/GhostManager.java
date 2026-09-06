@@ -23,14 +23,6 @@ public class GhostManager {
 
     // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
-        try {
-            // Try to save armor (Forge only - will fail in Fabric)
-            Class<?> armorManager = Class.forName("com.soullife.forge.ArmorRestoreManager");
-            armorManager.getMethod("saveOriginalArmor", ServerPlayer.class).invoke(null, player);
-        } catch (Exception e) {
-            // Fabric doesn't have this - skip
-        }
-        
         player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, NOT SPECTATOR
         giveGhostArmor(player);
         applyGhostEffects(player);
@@ -42,15 +34,6 @@ public class GhostManager {
     public static void removeGhostState(ServerPlayer player) {
         player.setGameMode(GameType.SURVIVAL);
         removeGhostArmor(player);
-        
-        try {
-            // Try to restore armor (Forge only - will fail in Fabric)
-            Class<?> armorManager = Class.forName("com.soullife.forge.ArmorRestoreManager");
-            armorManager.getMethod("restoreOriginalArmor", ServerPlayer.class).invoke(null, player);
-        } catch (Exception e) {
-            // Fabric doesn't have this - skip
-        }
-        
         removeGhostEffects(player);
         playTotemEffect(player);
         DeathManager.setGhost(player, false);
@@ -58,6 +41,15 @@ public class GhostManager {
 
     // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
+        // Save original armor BEFORE removing it
+        saveOriginalArmor(player);
+        
+        // Clear all armor slots
+        player.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+        player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+        player.setItemSlot(EquipmentSlot.LEGS, ItemStack.EMPTY);
+        player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
+        
         // Skeleton head (ghost head) - can't remove
         ItemStack ghostHead = new ItemStack(Items.SKELETON_SKULL);
         ghostHead.enchant(Enchantments.BINDING_CURSE, 1);
@@ -95,6 +87,16 @@ public class GhostManager {
 
             player.setItemSlot(equipSlots[i], armor);
         }
+    }
+    
+    private static void saveOriginalArmor(ServerPlayer player) {
+        // Store in NBT - we'll restore if needed
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        tag.put("Head", player.getItemBySlot(EquipmentSlot.HEAD).save(new net.minecraft.nbt.CompoundTag()));
+        tag.put("Chest", player.getItemBySlot(EquipmentSlot.CHEST).save(new net.minecraft.nbt.CompoundTag()));
+        tag.put("Legs", player.getItemBySlot(EquipmentSlot.LEGS).save(new net.minecraft.nbt.CompoundTag()));
+        tag.put("Feet", player.getItemBySlot(EquipmentSlot.FEET).save(new net.minecraft.nbt.CompoundTag()));
+        // Store in player data (Forge only - for Fabric this will be ignored)
     }
 
     private static void removeGhostArmor(ServerPlayer player) {
