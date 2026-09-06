@@ -75,8 +75,34 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Item Pickup & Use restriction - monitor inventory each tick
+        // Prevent ghost armor from dropping
+        net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            // This won't work for item drops, use tick event instead
+            return net.minecraft.world.InteractionResult.PASS;
+        });
+        
+        // Better approach: use tick to remove dropped ghost items
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
+                // Check for dropped ghost armor items and remove them
+                var entities = serverPlayer.level().getEntities(null, new net.minecraft.world.phys.AABB(
+                    serverPlayer.getX() - 32, serverPlayer.getY() - 32, serverPlayer.getZ() - 32,
+                    serverPlayer.getX() + 32, serverPlayer.getY() + 32, serverPlayer.getZ() + 32
+                ), entity -> entity instanceof net.minecraft.world.entity.item.ItemEntity);
+                
+                for (var entity : entities) {
+                    if (entity instanceof net.minecraft.world.entity.item.ItemEntity itemEntity) {
+                        ItemStack item = itemEntity.getItem();
+                        if (item.hasCustomHoverName()) {
+                            String name = item.getHoverName().getString();
+                            if (name.contains("Ghost") || name.contains("Skeleton")) {
+                                itemEntity.discard();  // Remove the item entity
+                            }
+                        }
+                    }
+                }
+            }
+        });
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
                 if (DeathManager.isGhost(serverPlayer)) {
                     // Check sacrifice items
