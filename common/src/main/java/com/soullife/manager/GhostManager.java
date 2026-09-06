@@ -41,9 +41,6 @@ public class GhostManager {
 
     // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
-        // Save original armor BEFORE removing it
-        saveOriginalArmor(player);
-        
         // Clear all armor slots
         player.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
         player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
@@ -87,16 +84,6 @@ public class GhostManager {
 
             player.setItemSlot(equipSlots[i], armor);
         }
-    }
-    
-    private static void saveOriginalArmor(ServerPlayer player) {
-        // Store in NBT - we'll restore if needed
-        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-        tag.put("Head", player.getItemBySlot(EquipmentSlot.HEAD).save(new net.minecraft.nbt.CompoundTag()));
-        tag.put("Chest", player.getItemBySlot(EquipmentSlot.CHEST).save(new net.minecraft.nbt.CompoundTag()));
-        tag.put("Legs", player.getItemBySlot(EquipmentSlot.LEGS).save(new net.minecraft.nbt.CompoundTag()));
-        tag.put("Feet", player.getItemBySlot(EquipmentSlot.FEET).save(new net.minecraft.nbt.CompoundTag()));
-        // Store in player data (Forge only - for Fabric this will be ignored)
     }
 
     private static void removeGhostArmor(ServerPlayer player) {
