@@ -137,20 +137,8 @@ public class CommonEvents {
         }
         return false;
     }
-}
 
-    public static boolean onItemDrop(ServerPlayer player, ItemStack item) {
-        // Prevent dropping ghost armor
-        if (item.hasCustomHoverName()) {
-            String name = item.getHoverName().getString();
-            if (name.contains("Ghost Head") || name.contains("Ghost Armor")) {
-                return true;  // Prevent drop
-            }
-        }
-        return false;
-    }
-
-    private static void dropOriginalArmor(ServerPlayer player) {
+    public static void dropOriginalArmor(ServerPlayer player) {
         // Drop all equipped armor
         net.minecraft.world.entity.EquipmentSlot[] slots = {
             net.minecraft.world.entity.EquipmentSlot.HEAD,
@@ -166,3 +154,4 @@ public class CommonEvents {
             }
         }
     }
+}
