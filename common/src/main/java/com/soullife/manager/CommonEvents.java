@@ -139,7 +139,27 @@ public class CommonEvents {
     }
 
     public static void dropOriginalArmor(ServerPlayer player) {
-        // Drop only original armor, NOT ghost armor
+        // If already ghost - remove ghost armor from equipment (don't drop it)
+        if (DeathManager.isGhost(player)) {
+            // Remove ghost armor slots so they don't drop
+            net.minecraft.world.entity.EquipmentSlot[] slots = {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET
+            };
+            
+            for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+                ItemStack armor = player.getItemBySlot(slot);
+                if (!armor.isEmpty() && isGhostArmor(armor)) {
+                    // Set to empty - removes it completely (doesn't drop)
+                    player.setItemSlot(slot, ItemStack.EMPTY);
+                }
+            }
+            return;
+        }
+        
+        // Drop original armor only if NOT already a ghost
         net.minecraft.world.entity.EquipmentSlot[] slots = {
             net.minecraft.world.entity.EquipmentSlot.HEAD,
             net.minecraft.world.entity.EquipmentSlot.CHEST,
@@ -149,7 +169,6 @@ public class CommonEvents {
         
         for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
             ItemStack armor = player.getItemBySlot(slot);
-            // Don't drop ghost armor - check if it's ghost armor
             if (!armor.isEmpty() && !isGhostArmor(armor)) {
                 player.drop(armor, true);
             }
@@ -160,6 +179,6 @@ public class CommonEvents {
         if (stack.isEmpty()) return false;
         if (!stack.hasCustomHoverName()) return false;
         String name = stack.getHoverName().getString();
-        return name.contains("Ghost");
+        return name.contains("Ghost") || name.contains("Skeleton");
     }
 }
