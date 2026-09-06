@@ -131,3 +131,14 @@ public class ForgeEvents {
         }
     }
 }
+
+    @SubscribeEvent
+    public static void onItemToss(ItemTossEvent event) {
+        ItemStack item = event.getEntity().getItem();
+        if (item.hasCustomHoverName()) {
+            String name = item.getHoverName().getString();
+            if (name.contains("Ghost") || name.contains("Skeleton")) {
+                event.setCanceled(true);  // Prevent drop
+            }
+        }
+    }
