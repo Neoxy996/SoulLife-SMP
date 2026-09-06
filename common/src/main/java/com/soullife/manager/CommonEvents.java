@@ -139,23 +139,8 @@ public class CommonEvents {
     }
 
     public static void dropOriginalArmor(ServerPlayer player) {
-        // If already ghost - remove ghost armor from equipment (don't drop it)
+        // If already ghost - don't drop anything (already cleared)
         if (DeathManager.isGhost(player)) {
-            // Remove ghost armor slots so they don't drop
-            net.minecraft.world.entity.EquipmentSlot[] slots = {
-                net.minecraft.world.entity.EquipmentSlot.HEAD,
-                net.minecraft.world.entity.EquipmentSlot.CHEST,
-                net.minecraft.world.entity.EquipmentSlot.LEGS,
-                net.minecraft.world.entity.EquipmentSlot.FEET
-            };
-            
-            for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
-                ItemStack armor = player.getItemBySlot(slot);
-                if (!armor.isEmpty() && isGhostArmor(armor)) {
-                    // Set to empty - removes it completely (doesn't drop)
-                    player.setItemSlot(slot, ItemStack.EMPTY);
-                }
-            }
             return;
         }
         
@@ -171,6 +156,8 @@ public class CommonEvents {
             ItemStack armor = player.getItemBySlot(slot);
             if (!armor.isEmpty() && !isGhostArmor(armor)) {
                 player.drop(armor, true);
+                // Clear the slot after dropping
+                player.setItemSlot(slot, ItemStack.EMPTY);
             }
         }
     }
