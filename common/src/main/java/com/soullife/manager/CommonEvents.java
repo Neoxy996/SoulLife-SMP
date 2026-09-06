@@ -20,13 +20,17 @@ public class CommonEvents {
         // If already permanent spectator → do nothing
         if (DeathManager.isPermanentSpectator(player)) return;
 
-        dropOriginalArmor(player);
-
-        // Check if totem protected (EITHER hand)
+        // Check if totem will save BEFORE dropping armor
         ItemStack offHand = player.getOffhandItem();
         ItemStack mainHand = player.getMainHandItem();
+        boolean hasTotem = offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING);
         
-        if (offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING)) {
+        if (!hasTotem) {
+            // Only drop armor if NO totem
+            dropOriginalArmor(player);
+        }
+
+        if (hasTotem) {
             // Totem will protect - don't count as death
             return;
         }
