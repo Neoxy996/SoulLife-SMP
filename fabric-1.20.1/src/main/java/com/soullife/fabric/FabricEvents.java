@@ -69,20 +69,19 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Item Pickup & Use restriction - monitor inventory each tick
+        // Remove ghost armor from ground ALWAYS (even after sacrifice)
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-                if (DeathManager.isGhost(serverPlayer)) {
-                    // Remove ghost armor from inventory (items picked up from ground)
-                    // But NOT from equipment (armor slots)
-                    for (int i = 0; i < 36; i++) {  // Only inventory, not armor slots
-                        ItemStack stack = serverPlayer.getInventory().getItem(i);
-                        if (!stack.isEmpty() && isGhostArmor(stack)) {
-                            serverPlayer.getInventory().removeItem(stack);
-                        }
+                // Remove ghost armor from inventory for ALL players
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = serverPlayer.getInventory().getItem(i);
+                    if (!stack.isEmpty() && isGhostArmor(stack)) {
+                        serverPlayer.getInventory().removeItem(stack);
                     }
-                    
-                    // Check sacrifice items
+                }
+                
+                // If still ghost - check sacrifice items
+                if (DeathManager.isGhost(serverPlayer)) {
                     for (ItemStack stack : serverPlayer.getInventory().items) {
                         if (!stack.isEmpty()) {
                             ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
@@ -107,6 +106,7 @@ public class FabricEvents {
         if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
         if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
         if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BarrelBlock) return true;
         if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
         if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) return true;
         if (block instanceof net.minecraft.world.level.block.FenceGateBlock) return true;
