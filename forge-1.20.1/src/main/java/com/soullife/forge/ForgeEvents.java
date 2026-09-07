@@ -65,7 +65,9 @@ public class ForgeEvents {
                 ItemStack pickedUp = event.getItem().getItem();
                 
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
+                    // Try to sacrifice
                     SacrificeManager.trySacrifice(player);
+                    // Item will be removed by SacrificeManager.removeItem()
                 }
             }
         }
@@ -103,6 +105,7 @@ public class ForgeEvents {
         if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
         if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
         if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BarrelBlock) return true;
         
         // Doors & Gates
         if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
@@ -129,5 +132,28 @@ public class ForgeEvents {
                 event.setCanceled(true);
             }
         }
+    }
+}
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            // Remove ghost armor from inventory for ALL players
+            for (ServerPlayer serverPlayer : event.getServer().getPlayerList().getPlayers()) {
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = serverPlayer.getInventory().getItem(i);
+                    if (!stack.isEmpty() && isGhostArmor(stack)) {
+                        serverPlayer.getInventory().removeItem(stack);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isGhostArmor(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        if (!stack.hasCustomHoverName()) return false;
+        String name = stack.getHoverName().getString();
+        return name.contains("Ghost") || name.contains("Skeleton");
     }
 }
