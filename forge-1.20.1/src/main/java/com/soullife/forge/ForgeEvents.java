@@ -8,6 +8,7 @@ import com.soullife.manager.SacrificeManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -20,26 +21,29 @@ public class ForgeEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            // Check if totem in EITHER hand
+            // Check if totem will save BEFORE dropping armor
             ItemStack offHand = player.getOffhandItem();
             ItemStack mainHand = player.getMainHandItem();
+            boolean hasTotem = offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING);
             
-            if (offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING)) {
-                // Totem will protect - cancel death event
-                event.setCanceled(true);
+            if (!hasTotem) {
+                // Only drop armor if NO totem
+                CommonEvents.dropOriginalArmor(player);
+            }
+
+            if (hasTotem) {
+                // Totem will protect - don't count as death
                 return;
             }
-            
+
             // If ghost and didn't pay item - don't count as death
             if (DeathManager.isGhost(player)) {
                 ItemStack required = SacrificeManager.getRequiredItem(player);
                 if (!SacrificeManager.hasItem(player, required)) {
-                    // Ghost died without paying - cancel death (will be paid later via pickup)
-                    event.setCanceled(true);
                     return;
                 }
             }
-            
+
             // Otherwise call common death handler
             CommonEvents.onPlayerDeath(player);
         }
@@ -67,7 +71,6 @@ public class ForgeEvents {
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
                     // Try to sacrifice
                     SacrificeManager.trySacrifice(player);
-                    // Item will be removed by SacrificeManager.removeItem()
                 }
             }
         }
@@ -83,40 +86,28 @@ public class ForgeEvents {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (DeathManager.isGhost(player)) {
-                // Allow opening containers but prevent placement
                 net.minecraft.world.level.block.Block block = event.getPlacedBlock().getBlock();
                 
                 if (!isAllowedForGhost(block)) {
-                    event.setCanceled(true);  // منع وضع البلوك
+                    event.setCanceled(true);
                 }
             }
         }
     }
 
-    private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
-        // Containers
-        if (block instanceof net.minecraft.world.level.block.ChestBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.ShulkerBoxBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.EnderChestBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.CraftingTableBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.FurnaceBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.BarrelBlock) return true;
-        
-        // Doors & Gates
-        if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.FenceGateBlock) return true;
-        
-        // Other interactive blocks
-        if (block instanceof net.minecraft.world.level.block.LecternBlock) return true;
-        if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
-        
-        return false;
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            // Remove ghost armor from inventory for ALL players
+            for (ServerPlayer serverPlayer : event.getServer().getPlayerList().getPlayers()) {
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = serverPlayer.getInventory().getItem(i);
+                    if (!stack.isEmpty() && isGhostArmor(stack)) {
+                        serverPlayer.getInventory().removeItem(stack);
+                    }
+                }
+            }
+        }
     }
 
     @SubscribeEvent
@@ -133,21 +124,26 @@ public class ForgeEvents {
             }
         }
     }
-}
 
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            // Remove ghost armor from inventory for ALL players
-            for (ServerPlayer serverPlayer : event.getServer().getPlayerList().getPlayers()) {
-                for (int i = 0; i < 36; i++) {
-                    ItemStack stack = serverPlayer.getInventory().getItem(i);
-                    if (!stack.isEmpty() && isGhostArmor(stack)) {
-                        serverPlayer.getInventory().removeItem(stack);
-                    }
-                }
-            }
-        }
+    private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
+        if (block instanceof net.minecraft.world.level.block.ChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.ShulkerBoxBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.EnderChestBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.CraftingTableBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BlastFurnaceBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.SmokerBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DispenserBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DropperBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.HopperBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.BarrelBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.DoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.FenceGateBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.LecternBlock) return true;
+        if (block instanceof net.minecraft.world.level.block.AnvilBlock) return true;
+        
+        return false;
     }
 
     private static boolean isGhostArmor(ItemStack stack) {
