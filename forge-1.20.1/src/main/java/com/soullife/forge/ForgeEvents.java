@@ -70,8 +70,35 @@ public class ForgeEvents {
                 
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
                     // Try to sacrifice
-                    SacrificeManager.trySacrifice(player);
+                    if (SacrificeManager.trySacrifice(player)) {
+                        // Remove ghost armor immediately after sacrifice
+                        removeGhostArmorEquipped(player);
+                    }
                 }
+            }
+            
+            // Remove ghost armor from inventory if picked up
+            for (int i = 0; i < 36; i++) {
+                ItemStack stack = player.getInventory().getItem(i);
+                if (!stack.isEmpty() && isGhostArmor(stack)) {
+                    player.getInventory().removeItem(stack);
+                }
+            }
+        }
+    }
+    
+    private static void removeGhostArmorEquipped(ServerPlayer player) {
+        net.minecraft.world.entity.EquipmentSlot[] slots = {
+            net.minecraft.world.entity.EquipmentSlot.HEAD,
+            net.minecraft.world.entity.EquipmentSlot.CHEST,
+            net.minecraft.world.entity.EquipmentSlot.LEGS,
+            net.minecraft.world.entity.EquipmentSlot.FEET
+        };
+        
+        for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+            ItemStack armor = player.getItemBySlot(slot);
+            if (!armor.isEmpty() && isGhostArmor(armor)) {
+                player.setItemSlot(slot, ItemStack.EMPTY);
             }
         }
     }
