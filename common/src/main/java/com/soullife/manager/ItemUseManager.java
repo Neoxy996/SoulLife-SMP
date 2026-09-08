@@ -11,16 +11,13 @@ public class ItemUseManager {
     public static boolean canUseItem(ServerPlayer player, ItemStack item) {
         // Ghost restricted items only
         if (DeathManager.isGhost(player)) {
-            // Block bucket usage (water/lava)
-            if (item.getItem() instanceof BucketItem) return false;
-            
-            // Block flint and steel (fire)
+            // Block flint and steel (fire) - ONLY this
             if (item.getItem() instanceof FlintAndSteelItem) return false;
             
-            // Block ender pearl
+            // Block ender pearl - ONLY this
             if (item.is(Items.ENDER_PEARL)) return false;
             
-            // Allow everything else: bow, food, chests, shulker, ender chest, etc
+            // Allow EVERYTHING else: buckets, bow, food, chests, shulker, ender chest, etc
         }
         
         return true;
