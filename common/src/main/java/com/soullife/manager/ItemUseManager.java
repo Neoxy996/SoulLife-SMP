@@ -14,10 +14,7 @@ public class ItemUseManager {
             // Block flint and steel (fire) - ONLY this
             if (item.getItem() instanceof FlintAndSteelItem) return false;
             
-            // Block ender pearl - ONLY this
-            if (item.is(Items.ENDER_PEARL)) return false;
-            
-            // Allow EVERYTHING else: buckets, bow, food, chests, shulker, ender chest, etc
+            // Allow EVERYTHING else: buckets, ender pearl, bow, food, chests, shulker, ender chest, etc
         }
         
         return true;
