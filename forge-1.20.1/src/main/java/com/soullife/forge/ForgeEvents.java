@@ -69,8 +69,13 @@ public class ForgeEvents {
                 ItemStack pickedUp = event.getItem().getItem();
                 
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
+                    // Cancel the pickup event so item doesn't go to inventory
+                    event.setCanceled(true);
+                    
                     // Try to sacrifice
                     if (SacrificeManager.trySacrifice(player)) {
+                        // Kill the item entity on ground
+                        event.getItem().discard();
                         // Remove ghost armor immediately after sacrifice
                         removeGhostArmorEquipped(player);
                     }
