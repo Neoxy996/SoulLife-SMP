@@ -69,9 +69,7 @@ public class ForgeEvents {
                 ItemStack pickedUp = event.getItem().getItem();
                 
                 if (!required.isEmpty() && pickedUp.is(required.getItem())) {
-                    // Cancel the pickup event so item doesn't go to inventory
-                    event.setCanceled(true);
-                    
+                    // ALLOW pickup (don't cancel)
                     // Try to sacrifice
                     if (SacrificeManager.trySacrifice(player)) {
                         // Kill the item entity on ground
@@ -79,6 +77,7 @@ public class ForgeEvents {
                         // Remove ghost armor immediately after sacrifice
                         removeGhostArmorEquipped(player);
                     }
+                    return;  // Exit early if sacrifice item
                 }
             }
             
@@ -118,11 +117,8 @@ public class ForgeEvents {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (DeathManager.isGhost(player)) {
-                net.minecraft.world.level.block.Block block = event.getPlacedBlock().getBlock();
-                
-                if (!isAllowedForGhost(block)) {
-                    event.setCanceled(true);
-                }
+                // Prevent ALL block placement for ghost
+                event.setCanceled(true);
             }
         }
     }
