@@ -54,19 +54,22 @@ public class DeathManager {
 
     public static void addDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).addDeaths(amount);
-        saveAllToNBT(player, new CompoundTag());
+        CompoundTag tag = player.getPersistentData();
+        saveToNBT(player, tag);
     }
 
     public static void setDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).setDeathCount(amount);
-        saveAllToNBT(player, new CompoundTag());
+        CompoundTag tag = player.getPersistentData();
+        saveToNBT(player, tag);
     }
 
     public static void removeDeaths(ServerPlayer player, int amount) {
         int current = getDeathCount(player);
         int newCount = Math.max(0, current - amount);
         getPlayerData(player).setDeathCount(newCount);
-        saveAllToNBT(player, new CompoundTag());
+        CompoundTag tag = player.getPersistentData();
+        saveToNBT(player, tag);
     }
 
     public static boolean isGhost(ServerPlayer player) {
@@ -75,7 +78,8 @@ public class DeathManager {
 
     public static void setGhost(ServerPlayer player, boolean ghost) {
         getPlayerData(player).setGhost(ghost);
-        saveAllToNBT(player, new CompoundTag());
+        CompoundTag tag = player.getPersistentData();
+        saveToNBT(player, tag);
     }
 
     public static boolean isPermanentSpectator(ServerPlayer player) {
@@ -84,7 +88,8 @@ public class DeathManager {
 
     public static void setPermanentSpectator(ServerPlayer player, boolean value) {
         getPlayerData(player).setPermanentSpectator(value);
-        saveAllToNBT(player, new CompoundTag());
+        CompoundTag tag = player.getPersistentData();
+        saveToNBT(player, tag);
     }
     public static ItemStack getSacrificeItem(int deathIndex) {
         if (deathIndex < 0 || deathIndex >= 20) return ItemStack.EMPTY;
