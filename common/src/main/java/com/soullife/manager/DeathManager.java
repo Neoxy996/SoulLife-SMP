@@ -1,8 +1,6 @@
 package com.soullife.manager;
 
 import com.soullife.data.PlayerData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -43,47 +41,42 @@ public class DeathManager {
         return playerDataMap.computeIfAbsent(uuid, id -> new PlayerData());
     }
 
-    public static PlayerData getPlayerData(ServerPlayer player) {
+    public static PlayerData getPlayerData(net.minecraft.server.level.ServerPlayer player) {
         return getPlayerData(player.getUUID());
     }
 
-    public static int getDeathCount(ServerPlayer player) {
+    public static int getDeathCount(net.minecraft.server.level.ServerPlayer player) {
         return getPlayerData(player).getDeathCount();
     }
 
-    public static void addDeaths(ServerPlayer player, int amount) {
+    public static void addDeaths(net.minecraft.server.level.ServerPlayer player, int amount) {
         getPlayerData(player).addDeaths(amount);
-        savePlayerData(player);
     }
 
-    public static void setDeaths(ServerPlayer player, int amount) {
+    public static void setDeaths(net.minecraft.server.level.ServerPlayer player, int amount) {
         getPlayerData(player).setDeathCount(amount);
-        savePlayerData(player);
     }
 
-    public static void removeDeaths(ServerPlayer player, int amount) {
+    public static void removeDeaths(net.minecraft.server.level.ServerPlayer player, int amount) {
         int current = getDeathCount(player);
         int newCount = Math.max(0, current - amount);
         getPlayerData(player).setDeathCount(newCount);
-        savePlayerData(player);
     }
 
-    public static boolean isGhost(ServerPlayer player) {
+    public static boolean isGhost(net.minecraft.server.level.ServerPlayer player) {
         return getPlayerData(player).isGhost();
     }
 
-    public static void setGhost(ServerPlayer player, boolean ghost) {
+    public static void setGhost(net.minecraft.server.level.ServerPlayer player, boolean ghost) {
         getPlayerData(player).setGhost(ghost);
-        savePlayerData(player);
     }
 
-    public static boolean isPermanentSpectator(ServerPlayer player) {
+    public static boolean isPermanentSpectator(net.minecraft.server.level.ServerPlayer player) {
         return getPlayerData(player).isPermanentSpectator();
     }
 
-    public static void setPermanentSpectator(ServerPlayer player, boolean value) {
+    public static void setPermanentSpectator(net.minecraft.server.level.ServerPlayer player, boolean value) {
         getPlayerData(player).setPermanentSpectator(value);
-        savePlayerData(player);
     }
 
     public static ItemStack getSacrificeItem(int deathIndex) {
@@ -104,66 +97,5 @@ public class DeathManager {
 
     public static ItemStack[] getCurrentSacrificeItems() {
         return currentSacrificeItems;
-    }
-
-    public static void loadPlayerData(ServerPlayer player) {
-        PlayerData data = getPlayerData(player);
-        
-        try {
-            if (player.getPersistentData().contains("soullife_deaths")) {
-                CompoundTag tag = player.getPersistentData();
-                data.setDeathCount(tag.getInt("soullife_deaths"));
-                data.setGhost(tag.getBoolean("soullife_ghost"));
-                data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
-            }
-        } catch (Exception e) {
-            try {
-                CompoundTag tag = player.serializeNBT();
-                if (tag.contains("soullife_deaths")) {
-                    data.setDeathCount(tag.getInt("soullife_deaths"));
-                    data.setGhost(tag.getBoolean("soullife_ghost"));
-                    data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    public static void savePlayerData(ServerPlayer player) {
-        PlayerData data = getPlayerData(player);
-        
-        try {
-            CompoundTag tag = player.getPersistentData();
-            tag.putInt("soullife_deaths", data.getDeathCount());
-            tag.putBoolean("soullife_ghost", data.isGhost());
-            tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
-        } catch (Exception e) {
-            try {
-                CompoundTag tag = player.serializeNBT();
-                tag.putInt("soullife_deaths", data.getDeathCount());
-                tag.putBoolean("soullife_ghost", data.isGhost());
-                tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
-                player.deserializeNBT(tag);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    public static void saveAllToNBT(ServerPlayer player, CompoundTag tag) {
-        PlayerData data = getPlayerData(player);
-        tag.putInt("soullife_deaths", data.getDeathCount());
-        tag.putBoolean("soullife_ghost", data.isGhost());
-        tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
-    }
-
-    public static void loadAllFromNBT(ServerPlayer player, CompoundTag tag) {
-        if (tag.contains("soullife_deaths")) {
-            PlayerData data = getPlayerData(player);
-            data.setDeathCount(tag.getInt("soullife_deaths"));
-            data.setGhost(tag.getBoolean("soullife_ghost"));
-            data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
-        }
     }
 }
