@@ -10,43 +10,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * SoulLife - DeathManager
- * Tracks player deaths and manages ghost/survival states.
- */
 public class DeathManager {
 
     private static final Map<UUID, PlayerData> playerDataMap = new HashMap<>();
 
-    // ─── Default sacrifice items (Death 1-20) ─────────────────────────────────
     public static final ItemStack[] DEFAULT_SACRIFICE_ITEMS = new ItemStack[]{
-        new ItemStack(Items.IRON_INGOT),           // Death 1
-        new ItemStack(Items.GOLD_INGOT),           // Death 2
-        new ItemStack(Items.EMERALD),              // Death 3
-        new ItemStack(Items.DIAMOND),              // Death 4
-        new ItemStack(Items.GOLDEN_APPLE),         // Death 5
-        new ItemStack(Items.IRON_BLOCK),           // Death 6
-        new ItemStack(Items.GOLD_BLOCK),           // Death 7
-        new ItemStack(Items.EMERALD_BLOCK),        // Death 8
-        new ItemStack(Items.DIAMOND_BLOCK),        // Death 9
-        new ItemStack(Items.END_CRYSTAL),          // Death 10
-        new ItemStack(Items.NETHERITE_SCRAP),      // Death 11
-        new ItemStack(Items.NETHERITE_INGOT),      // Death 12
-        new ItemStack(Items.TOTEM_OF_UNDYING),     // Death 13
-        new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), // Death 14
-        new ItemStack(Items.WITHER_SKELETON_SKULL),// Death 15
-        new ItemStack(Items.NETHER_STAR),          // Death 16
-        new ItemStack(Items.ENCHANTED_GOLDEN_APPLE),// Death 17
-        new ItemStack(Items.NETHERITE_BLOCK),      // Death 18
-        new ItemStack(Items.BEACON),               // Death 19
-        new ItemStack(Items.DRAGON_EGG),           // Death 20
+        new ItemStack(Items.IRON_INGOT),
+        new ItemStack(Items.GOLD_INGOT),
+        new ItemStack(Items.EMERALD),
+        new ItemStack(Items.DIAMOND),
+        new ItemStack(Items.GOLDEN_APPLE),
+        new ItemStack(Items.IRON_BLOCK),
+        new ItemStack(Items.GOLD_BLOCK),
+        new ItemStack(Items.EMERALD_BLOCK),
+        new ItemStack(Items.DIAMOND_BLOCK),
+        new ItemStack(Items.END_CRYSTAL),
+        new ItemStack(Items.NETHERITE_SCRAP),
+        new ItemStack(Items.NETHERITE_INGOT),
+        new ItemStack(Items.TOTEM_OF_UNDYING),
+        new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
+        new ItemStack(Items.WITHER_SKELETON_SKULL),
+        new ItemStack(Items.NETHER_STAR),
+        new ItemStack(Items.ENCHANTED_GOLDEN_APPLE),
+        new ItemStack(Items.NETHERITE_BLOCK),
+        new ItemStack(Items.BEACON),
+        new ItemStack(Items.DRAGON_EGG),
     };
 
-    // ─── Current sacrifice items (can be edited by admin) ─────────────────────
-    private static final ItemStack[] currentSacrificeItems =
-        DEFAULT_SACRIFICE_ITEMS.clone();
+    private static final ItemStack[] currentSacrificeItems = DEFAULT_SACRIFICE_ITEMS.clone();
 
-    // ─── Player Data ──────────────────────────────────────────────────────────
     public static PlayerData getPlayerData(UUID uuid) {
         return playerDataMap.computeIfAbsent(uuid, id -> new PlayerData());
     }
@@ -55,32 +47,34 @@ public class DeathManager {
         return getPlayerData(player.getUUID());
     }
 
-    // ─── Death Count ──────────────────────────────────────────────────────────
     public static int getDeathCount(ServerPlayer player) {
         return getPlayerData(player).getDeathCount();
     }
 
     public static void addDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).addDeaths(amount);
+        savePlayerData(player);
     }
 
     public static void setDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).setDeathCount(amount);
+        savePlayerData(player);
     }
 
     public static void removeDeaths(ServerPlayer player, int amount) {
         int current = getDeathCount(player);
         int newCount = Math.max(0, current - amount);
         getPlayerData(player).setDeathCount(newCount);
+        savePlayerData(player);
     }
 
-    // ─── Ghost State ─────────────────────────────────────────────────────────
     public static boolean isGhost(ServerPlayer player) {
         return getPlayerData(player).isGhost();
     }
 
     public static void setGhost(ServerPlayer player, boolean ghost) {
         getPlayerData(player).setGhost(ghost);
+        savePlayerData(player);
     }
 
     public static boolean isPermanentSpectator(ServerPlayer player) {
@@ -89,9 +83,9 @@ public class DeathManager {
 
     public static void setPermanentSpectator(ServerPlayer player, boolean value) {
         getPlayerData(player).setPermanentSpectator(value);
+        savePlayerData(player);
     }
 
-    // ─── Sacrifice Items ─────────────────────────────────────────────────────
     public static ItemStack getSacrificeItem(int deathIndex) {
         if (deathIndex < 0 || deathIndex >= 20) return ItemStack.EMPTY;
         return currentSacrificeItems[deathIndex].copy();
@@ -112,23 +106,38 @@ public class DeathManager {
         return currentSacrificeItems;
     }
 
-    // ─── NBT Save/Load ───────────────────────────────────────────────────────
+    public static void loadPlayerData(ServerPlayer player) {
+        CompoundTag tag = player.getPersistentData();
+        
+        if (tag.contains("soullife_deaths")) {
+            int deaths = tag.getInt("soullife_deaths");
+            boolean isGhost = tag.getBoolean("soullife_ghost");
+            boolean isPermanent = tag.getBoolean("soullife_permanent");
+            
+            PlayerData data = getPlayerData(player);
+            data.setDeathCount(deaths);
+            data.setGhost(isGhost);
+            data.setPermanentSpectator(isPermanent);
+        }
+    }
+
+    public static void savePlayerData(ServerPlayer player) {
+        CompoundTag tag = player.getPersistentData();
+        PlayerData data = getPlayerData(player);
+        
+        tag.putInt("soullife_deaths", data.getDeathCount());
+        tag.putBoolean("soullife_ghost", data.isGhost());
+        tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
+    }
+
     public static void saveAllToNBT(ServerPlayer player, CompoundTag tag) {
-        saveToNBT(player, tag);
-    }
-
-    public static void loadAllFromNBT(ServerPlayer player, CompoundTag tag) {
-        loadFromNBT(player, tag);
-    }
-
-    public static void saveToNBT(ServerPlayer player, CompoundTag tag) {
         PlayerData data = getPlayerData(player);
         tag.putInt("soullife_deaths", data.getDeathCount());
         tag.putBoolean("soullife_ghost", data.isGhost());
         tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
     }
 
-    public static void loadFromNBT(ServerPlayer player, CompoundTag tag) {
+    public static void loadAllFromNBT(ServerPlayer player, CompoundTag tag) {
         if (tag.contains("soullife_deaths")) {
             PlayerData data = getPlayerData(player);
             data.setDeathCount(tag.getInt("soullife_deaths"));
@@ -136,4 +145,4 @@ public class DeathManager {
             data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
         }
     }
-    }
+}
