@@ -5,6 +5,7 @@ import com.soullife.manager.DeathManager;
 import com.soullife.manager.GhostManager;
 import com.soullife.manager.ItemUseManager;
 import com.soullife.manager.SacrificeManager;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -57,9 +58,20 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            CompoundTag tag = player.getPersistentData();
+            DeathManager.saveAllToNBT(player, tag);
+        }
+    }
+
+    @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player)
+        if (event.getEntity() instanceof ServerPlayer player) {
+            CompoundTag tag = player.getPersistentData();
+            DeathManager.loadAllFromNBT(player, tag);
             CommonEvents.onPlayerLogin(player);
+        }
     }
 
 
