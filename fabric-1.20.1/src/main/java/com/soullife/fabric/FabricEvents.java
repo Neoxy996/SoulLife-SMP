@@ -5,13 +5,10 @@ import com.soullife.manager.DeathManager;
 import com.soullife.manager.SacrificeManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -20,9 +17,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Scanner;
-import java.util.UUID;
 
 public class FabricEvents {
 
@@ -57,7 +51,7 @@ public class FabricEvents {
             loadPlayerData(newPlayer);
         });
 
-        ServerLifecycleEvents.SERVER_TICK.register((server) -> {
+        ServerTickEvents.END_SERVER_TICK.register((server) -> {
             tickCounter++;
             
             if (tickCounter % 5 != 0) return;
@@ -111,7 +105,7 @@ public class FabricEvents {
                 dataDir.mkdirs();
             }
             
-            File playerFile = new File(dataDir, player.getUUID() + ".json");
+            File playerFile = new File(dataDir, player.getUUID() + ".txt");
             if (!playerFile.exists()) {
                 return;
             }
@@ -140,7 +134,7 @@ public class FabricEvents {
                 dataDir.mkdirs();
             }
             
-            File playerFile = new File(dataDir, player.getUUID() + ".json");
+            File playerFile = new File(dataDir, player.getUUID() + ".txt");
             
             int deaths = DeathManager.getDeathCount(player);
             boolean isGhost = DeathManager.isGhost(player);
