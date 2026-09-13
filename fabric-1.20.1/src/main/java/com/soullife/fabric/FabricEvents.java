@@ -26,26 +26,26 @@ public class FabricEvents {
             return true;
         });
 
-        // Player Respawn
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            // Transfer data from old player to new player
-            DeathManager.loadAllFromNBT(newPlayer, oldPlayer.getPersistentData());
+            CompoundTag tag = new CompoundTag();
+            oldPlayer.saveWithoutId(tag);
+            newPlayer.load(tag);
             CommonEvents.onPlayerRespawn(newPlayer);
         });
 
-        // Player Login
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            // Load player data from NBT when joining
-            DeathManager.loadAllFromNBT(player, player.getPersistentData());
+            CompoundTag tag = new CompoundTag();
+            player.saveWithoutId(tag);
+            DeathManager.loadAllFromNBT(player, tag);
             CommonEvents.onPlayerLogin(player);
         });
 
-        // Player Logout
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            // Save player data to NBT when leaving
-            DeathManager.saveAllToNBT(player, player.getPersistentData());
+            CompoundTag tag = new CompoundTag();
+            player.saveWithoutId(tag);
+            DeathManager.saveAllToNBT(player, tag);
         });
 
         // Block Break - prevent ghost from breaking blocks
@@ -74,10 +74,8 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Remove ghost armor from ground ALWAYS (even after sacrifice)
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-                // Remove ghost armor from inventory for ALL players
                 for (int i = 0; i < 36; i++) {
                     ItemStack stack = serverPlayer.getInventory().getItem(i);
                     if (!stack.isEmpty() && isGhostArmor(stack)) {
@@ -85,7 +83,6 @@ public class FabricEvents {
                     }
                 }
                 
-                // If still ghost - check sacrifice items
                 if (DeathManager.isGhost(serverPlayer)) {
                     for (ItemStack stack : serverPlayer.getInventory().items) {
                         if (!stack.isEmpty()) {
