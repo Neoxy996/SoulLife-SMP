@@ -27,9 +27,6 @@ public class FabricEvents {
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            CompoundTag tag = new CompoundTag();
-            oldPlayer.saveWithoutId(tag);
-            newPlayer.load(tag);
             CommonEvents.onPlayerRespawn(newPlayer);
         });
 
