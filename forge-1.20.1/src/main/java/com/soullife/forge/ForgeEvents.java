@@ -52,9 +52,7 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            // Ensure data is saved after respawn
             CommonEvents.onPlayerRespawn(player);
-            DeathManager.saveAllToNBT(player, player.getPersistentData());
         }
     }
 
