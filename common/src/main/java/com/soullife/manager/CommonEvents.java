@@ -57,8 +57,6 @@ public class CommonEvents {
     }
 
     public static void onPlayerRespawn(ServerPlayer player) {
-        DeathManager.loadPlayerData(player);
-        
         if (DeathManager.isPermanentSpectator(player)) {
             player.setGameMode(GameType.SPECTATOR);
             return;
@@ -72,8 +70,6 @@ public class CommonEvents {
     }
 
     public static void onPlayerLogin(ServerPlayer player) {
-        DeathManager.loadPlayerData(player);
-        
         if (DeathManager.isPermanentSpectator(player)) {
             player.setGameMode(GameType.SPECTATOR);
         } else if (DeathManager.isGhost(player)) {
