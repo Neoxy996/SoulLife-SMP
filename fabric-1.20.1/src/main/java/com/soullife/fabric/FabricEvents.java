@@ -17,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class FabricEvents {
 
+    private static int tickCounter = 0;
+
     public static void register() {
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player) {
@@ -66,7 +68,6 @@ public class FabricEvents {
         });
 
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            int tickCounter = 0;
             tickCounter++;
             
             if (tickCounter % 5 != 0) return;
@@ -90,21 +91,34 @@ public class FabricEvents {
     }
 
     private static void loadPlayerData(ServerPlayer player) {
-        CompoundTag tag = player.serializeNBT();
-        
-        if (tag.contains("soullife_deaths")) {
-            DeathManager.setDeaths(player, tag.getInt("soullife_deaths"));
-            DeathManager.setGhost(player, tag.getBoolean("soullife_ghost"));
-            DeathManager.setPermanentSpectator(player, tag.getBoolean("soullife_permanent"));
+        try {
+            CompoundTag nbt = new CompoundTag();
+            
+            if (player.getEntityData().getCompound("PublicCustomData").contains("soullife_deaths")) {
+                CompoundTag customData = player.getEntityData().getCompound("PublicCustomData");
+                int deaths = customData.getInt("soullife_deaths");
+                boolean isGhost = customData.getBoolean("soullife_ghost");
+                boolean isPermanent = customData.getBoolean("soullife_permanent");
+                
+                DeathManager.setDeaths(player, deaths);
+                DeathManager.setGhost(player, isGhost);
+                DeathManager.setPermanentSpectator(player, isPermanent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private static void savePlayerData(ServerPlayer player) {
-        CompoundTag tag = player.serializeNBT();
-        
-        tag.putInt("soullife_deaths", DeathManager.getDeathCount(player));
-        tag.putBoolean("soullife_ghost", DeathManager.isGhost(player));
-        tag.putBoolean("soullife_permanent", DeathManager.isPermanentSpectator(player));
+        try {
+            CompoundTag customData = player.getEntityData().getCompound("PublicCustomData");
+            
+            customData.putInt("soullife_deaths", DeathManager.getDeathCount(player));
+            customData.putBoolean("soullife_ghost", DeathManager.isGhost(player));
+            customData.putBoolean("soullife_permanent", DeathManager.isPermanentSpectator(player));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
