@@ -2,22 +2,32 @@ package com.soullife.fabric;
 
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
-import com.soullife.manager.ItemUseManager;
 import com.soullife.manager.SacrificeManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Scanner;
+import java.util.UUID;
+
 public class FabricEvents {
 
     private static int tickCounter = 0;
+    private static final String DATA_DIR = "soullife-data";
 
     public static void register() {
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
@@ -43,6 +53,32 @@ public class FabricEvents {
             savePlayerData(player);
         });
 
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+            loadPlayerData(newPlayer);
+        });
+
+        ServerLifecycleEvents.SERVER_TICK.register((server) -> {
+            tickCounter++;
+            
+            if (tickCounter % 5 != 0) return;
+            
+            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
+                if (DeathManager.isGhost(serverPlayer)) {
+                    ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
+                    if (!required.isEmpty() && SacrificeManager.hasItem(serverPlayer, required)) {
+                        SacrificeManager.trySacrifice(serverPlayer);
+                    }
+                }
+                
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = serverPlayer.getInventory().getItem(i);
+                    if (!stack.isEmpty() && isGhostArmor(stack)) {
+                        serverPlayer.getInventory().removeItem(stack);
+                    }
+                }
+            }
+        });
+
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (CommonEvents.onBlockBreak(serverPlayer)) {
@@ -66,39 +102,27 @@ public class FabricEvents {
             }
             return InteractionResult.PASS;
         });
-
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            tickCounter++;
-            
-            if (tickCounter % 5 != 0) return;
-            
-            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-                if (DeathManager.isGhost(serverPlayer)) {
-                    ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
-                    if (!required.isEmpty() && SacrificeManager.hasItem(serverPlayer, required)) {
-                        SacrificeManager.trySacrifice(serverPlayer);
-                    }
-                }
-                
-                for (int i = 0; i < 36; i++) {
-                    ItemStack stack = serverPlayer.getInventory().getItem(i);
-                    if (!stack.isEmpty() && isGhostArmor(stack)) {
-                        serverPlayer.getInventory().removeItem(stack);
-                    }
-                }
-            }
-        });
     }
 
     private static void loadPlayerData(ServerPlayer player) {
         try {
-            CompoundTag nbt = new CompoundTag();
+            File dataDir = new File(DATA_DIR);
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
+            }
             
-            if (player.getEntityData().getCompound("PublicCustomData").contains("soullife_deaths")) {
-                CompoundTag customData = player.getEntityData().getCompound("PublicCustomData");
-                int deaths = customData.getInt("soullife_deaths");
-                boolean isGhost = customData.getBoolean("soullife_ghost");
-                boolean isPermanent = customData.getBoolean("soullife_permanent");
+            File playerFile = new File(dataDir, player.getUUID() + ".json");
+            if (!playerFile.exists()) {
+                return;
+            }
+            
+            String content = new String(Files.readAllBytes(playerFile.toPath()));
+            String[] parts = content.split("\\|");
+            
+            if (parts.length >= 3) {
+                int deaths = Integer.parseInt(parts[0]);
+                boolean isGhost = Boolean.parseBoolean(parts[1]);
+                boolean isPermanent = Boolean.parseBoolean(parts[2]);
                 
                 DeathManager.setDeaths(player, deaths);
                 DeathManager.setGhost(player, isGhost);
@@ -111,12 +135,23 @@ public class FabricEvents {
 
     private static void savePlayerData(ServerPlayer player) {
         try {
-            CompoundTag customData = player.getEntityData().getCompound("PublicCustomData");
+            File dataDir = new File(DATA_DIR);
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
+            }
             
-            customData.putInt("soullife_deaths", DeathManager.getDeathCount(player));
-            customData.putBoolean("soullife_ghost", DeathManager.isGhost(player));
-            customData.putBoolean("soullife_permanent", DeathManager.isPermanentSpectator(player));
-        } catch (Exception e) {
+            File playerFile = new File(dataDir, player.getUUID() + ".json");
+            
+            int deaths = DeathManager.getDeathCount(player);
+            boolean isGhost = DeathManager.isGhost(player);
+            boolean isPermanent = DeathManager.isPermanentSpectator(player);
+            
+            String data = deaths + "|" + isGhost + "|" + isPermanent;
+            
+            FileWriter writer = new FileWriter(playerFile);
+            writer.write(data);
+            writer.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
