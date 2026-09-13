@@ -2,6 +2,7 @@ package com.soullife.fabric;
 
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
+import com.soullife.manager.ItemUseManager;
 import com.soullife.manager.SacrificeManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -9,21 +10,15 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-
 public class FabricEvents {
 
-    private static int tickCounter = 0;
-    private static final String DATA_DIR = "soullife-data";
-
     public static void register() {
+        // Player Death
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player) {
                 CommonEvents.onPlayerDeath(player);
@@ -31,48 +26,29 @@ public class FabricEvents {
             return true;
         });
 
+        // Player Respawn
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            loadPlayerData(newPlayer);
+            // Transfer data from old player to new player
+            DeathManager.loadAllFromNBT(newPlayer, oldPlayer.getPersistentData());
             CommonEvents.onPlayerRespawn(newPlayer);
         });
 
+        // Player Login
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            loadPlayerData(player);
+            // Load player data from NBT when joining
+            DeathManager.loadAllFromNBT(player, player.getPersistentData());
             CommonEvents.onPlayerLogin(player);
         });
 
+        // Player Logout
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            savePlayerData(player);
+            // Save player data to NBT when leaving
+            DeathManager.saveAllToNBT(player, player.getPersistentData());
         });
 
-        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            loadPlayerData(newPlayer);
-        });
-
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            tickCounter++;
-            
-            if (tickCounter % 5 != 0) return;
-            
-            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-                if (DeathManager.isGhost(serverPlayer)) {
-                    ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
-                    if (!required.isEmpty() && SacrificeManager.hasItem(serverPlayer, required)) {
-                        SacrificeManager.trySacrifice(serverPlayer);
-                    }
-                }
-                
-                for (int i = 0; i < 36; i++) {
-                    ItemStack stack = serverPlayer.getInventory().getItem(i);
-                    if (!stack.isEmpty() && isGhostArmor(stack)) {
-                        serverPlayer.getInventory().removeItem(stack);
-                    }
-                }
-            }
-        });
-
+        // Block Break - prevent ghost from breaking blocks
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (CommonEvents.onBlockBreak(serverPlayer)) {
@@ -82,6 +58,7 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
+        // Block Place - prevent ghost from placing blocks ONLY
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (DeathManager.isGhost(serverPlayer)) {
@@ -96,58 +73,31 @@ public class FabricEvents {
             }
             return InteractionResult.PASS;
         });
-    }
 
-    private static void loadPlayerData(ServerPlayer player) {
-        try {
-            File dataDir = new File(DATA_DIR);
-            if (!dataDir.exists()) {
-                dataDir.mkdirs();
-            }
-            
-            File playerFile = new File(dataDir, player.getUUID() + ".txt");
-            if (!playerFile.exists()) {
-                return;
-            }
-            
-            String content = new String(Files.readAllBytes(playerFile.toPath()));
-            String[] parts = content.split("\\|");
-            
-            if (parts.length >= 3) {
-                int deaths = Integer.parseInt(parts[0]);
-                boolean isGhost = Boolean.parseBoolean(parts[1]);
-                boolean isPermanent = Boolean.parseBoolean(parts[2]);
+        // Remove ghost armor from ground ALWAYS (even after sacrifice)
+        ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
+                // Remove ghost armor from inventory for ALL players
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = serverPlayer.getInventory().getItem(i);
+                    if (!stack.isEmpty() && isGhostArmor(stack)) {
+                        serverPlayer.getInventory().removeItem(stack);
+                    }
+                }
                 
-                DeathManager.setDeaths(player, deaths);
-                DeathManager.setGhost(player, isGhost);
-                DeathManager.setPermanentSpectator(player, isPermanent);
+                // If still ghost - check sacrifice items
+                if (DeathManager.isGhost(serverPlayer)) {
+                    for (ItemStack stack : serverPlayer.getInventory().items) {
+                        if (!stack.isEmpty()) {
+                            ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
+                            if (!required.isEmpty() && stack.is(required.getItem())) {
+                                SacrificeManager.trySacrifice(serverPlayer);
+                            }
+                        }
+                    }
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void savePlayerData(ServerPlayer player) {
-        try {
-            File dataDir = new File(DATA_DIR);
-            if (!dataDir.exists()) {
-                dataDir.mkdirs();
-            }
-            
-            File playerFile = new File(dataDir, player.getUUID() + ".txt");
-            
-            int deaths = DeathManager.getDeathCount(player);
-            boolean isGhost = DeathManager.isGhost(player);
-            boolean isPermanent = DeathManager.isPermanentSpectator(player);
-            
-            String data = deaths + "|" + isGhost + "|" + isPermanent;
-            
-            FileWriter writer = new FileWriter(playerFile);
-            writer.write(data);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
