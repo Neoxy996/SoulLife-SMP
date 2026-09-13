@@ -32,16 +32,14 @@ public class FabricEvents {
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            CompoundTag tag = new CompoundTag();
-            player.saveWithoutId(tag);
+            CompoundTag tag = player.getPersistentData();
             DeathManager.loadAllFromNBT(player, tag);
             CommonEvents.onPlayerLogin(player);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            CompoundTag tag = new CompoundTag();
-            player.saveWithoutId(tag);
+            CompoundTag tag = player.getPersistentData();
             DeathManager.saveAllToNBT(player, tag);
         });
 
