@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 public class FabricEvents {
 
     public static void register() {
-        // Player Death
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player) {
                 CommonEvents.onPlayerDeath(player);
@@ -26,24 +25,22 @@ public class FabricEvents {
             return true;
         });
 
-        // Player Respawn
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            loadPlayerData(newPlayer);
             CommonEvents.onPlayerRespawn(newPlayer);
         });
 
-        // Player Login
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
+            loadPlayerData(player);
             CommonEvents.onPlayerLogin(player);
         });
 
-        // Player Logout
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            DeathManager.saveAllToNBT(player, new CompoundTag());
+            savePlayerData(player);
         });
 
-        // Block Break - prevent ghost from breaking blocks
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (CommonEvents.onBlockBreak(serverPlayer)) {
@@ -53,7 +50,6 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Block Place - prevent ghost from placing blocks ONLY
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (DeathManager.isGhost(serverPlayer)) {
@@ -69,30 +65,46 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Remove ghost armor from ground ALWAYS (even after sacrifice)
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            int tickCounter = 0;
+            tickCounter++;
+            
+            if (tickCounter % 5 != 0) return;
+            
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-                // Remove ghost armor from inventory for ALL players
+                if (DeathManager.isGhost(serverPlayer)) {
+                    ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
+                    if (!required.isEmpty() && SacrificeManager.hasItem(serverPlayer, required)) {
+                        SacrificeManager.trySacrifice(serverPlayer);
+                    }
+                }
+                
                 for (int i = 0; i < 36; i++) {
                     ItemStack stack = serverPlayer.getInventory().getItem(i);
                     if (!stack.isEmpty() && isGhostArmor(stack)) {
                         serverPlayer.getInventory().removeItem(stack);
                     }
                 }
-                
-                // If still ghost - check sacrifice items
-                if (DeathManager.isGhost(serverPlayer)) {
-                    for (ItemStack stack : serverPlayer.getInventory().items) {
-                        if (!stack.isEmpty()) {
-                            ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
-                            if (!required.isEmpty() && stack.is(required.getItem())) {
-                                SacrificeManager.trySacrifice(serverPlayer);
-                            }
-                        }
-                    }
-                }
             }
         });
+    }
+
+    private static void loadPlayerData(ServerPlayer player) {
+        CompoundTag tag = player.serializeNBT();
+        
+        if (tag.contains("soullife_deaths")) {
+            DeathManager.setDeaths(player, tag.getInt("soullife_deaths"));
+            DeathManager.setGhost(player, tag.getBoolean("soullife_ghost"));
+            DeathManager.setPermanentSpectator(player, tag.getBoolean("soullife_permanent"));
+        }
+    }
+
+    private static void savePlayerData(ServerPlayer player) {
+        CompoundTag tag = player.serializeNBT();
+        
+        tag.putInt("soullife_deaths", DeathManager.getDeathCount(player));
+        tag.putBoolean("soullife_ghost", DeathManager.isGhost(player));
+        tag.putBoolean("soullife_permanent", DeathManager.isPermanentSpectator(player));
     }
 
     private static boolean isAllowedForGhost(net.minecraft.world.level.block.Block block) {
