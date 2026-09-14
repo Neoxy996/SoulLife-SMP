@@ -1,5 +1,6 @@
 package com.soullife.data;
 
+import net.blay09.mods.balm.api.Balm;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,14 +43,14 @@ public class PlayerDataNBT {
     }
 
     public static void saveToPersistent(ServerPlayer player, PlayerData data) {
-        CompoundTag playerData = player.getPersistentData();
+        CompoundTag playerData = Balm.getHooks().getPersistentData(player);
         CompoundTag soulLifeTag = new CompoundTag();
         writeToTag(soulLifeTag, data);
         playerData.put(SOULLIFE_TAG, soulLifeTag);
     }
 
     public static PlayerData loadFromPersistent(ServerPlayer player) {
-        CompoundTag playerData = player.getPersistentData();
+        CompoundTag playerData = Balm.getHooks().getPersistentData(player);
         CompoundTag soulLifeTag = playerData.getCompound(SOULLIFE_TAG);
         return deserialize(soulLifeTag);
     }
