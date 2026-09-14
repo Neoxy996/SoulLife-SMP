@@ -1,6 +1,7 @@
 package com.soullife.manager;
 
 import com.soullife.data.PlayerData;
+import com.soullife.data.PlayerDataNBT;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -54,22 +55,16 @@ public class DeathManager {
 
     public static void addDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).addDeaths(amount);
-        CompoundTag tag = player.getPersistentData();
-        saveToNBT(player, tag);
     }
 
     public static void setDeaths(ServerPlayer player, int amount) {
         getPlayerData(player).setDeathCount(amount);
-        CompoundTag tag = player.getPersistentData();
-        saveToNBT(player, tag);
     }
 
     public static void removeDeaths(ServerPlayer player, int amount) {
         int current = getDeathCount(player);
         int newCount = Math.max(0, current - amount);
         getPlayerData(player).setDeathCount(newCount);
-        CompoundTag tag = player.getPersistentData();
-        saveToNBT(player, tag);
     }
 
     public static boolean isGhost(ServerPlayer player) {
@@ -78,8 +73,6 @@ public class DeathManager {
 
     public static void setGhost(ServerPlayer player, boolean ghost) {
         getPlayerData(player).setGhost(ghost);
-        CompoundTag tag = player.getPersistentData();
-        saveToNBT(player, tag);
     }
 
     public static boolean isPermanentSpectator(ServerPlayer player) {
@@ -88,8 +81,6 @@ public class DeathManager {
 
     public static void setPermanentSpectator(ServerPlayer player, boolean value) {
         getPlayerData(player).setPermanentSpectator(value);
-        CompoundTag tag = player.getPersistentData();
-        saveToNBT(player, tag);
     }
     public static ItemStack getSacrificeItem(int deathIndex) {
         if (deathIndex < 0 || deathIndex >= 20) return ItemStack.EMPTY;
@@ -120,18 +111,10 @@ public class DeathManager {
     }
 
     public static void saveToNBT(ServerPlayer player, CompoundTag tag) {
-        PlayerData data = getPlayerData(player);
-        tag.putInt("soullife_deaths", data.getDeathCount());
-        tag.putBoolean("soullife_ghost", data.isGhost());
-        tag.putBoolean("soullife_permanent", data.isPermanentSpectator());
+        PlayerDataNBT.writeToTag(tag, getPlayerData(player));
     }
 
     public static void loadFromNBT(ServerPlayer player, CompoundTag tag) {
-        if (tag.contains("soullife_deaths")) {
-            PlayerData data = getPlayerData(player);
-            data.setDeathCount(tag.getInt("soullife_deaths"));
-            data.setGhost(tag.getBoolean("soullife_ghost"));
-            data.setPermanentSpectator(tag.getBoolean("soullife_permanent"));
-        }
+        PlayerDataNBT.readFromTag(tag, getPlayerData(player));
     }
 }
