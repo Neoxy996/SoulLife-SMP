@@ -60,16 +60,14 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            CompoundTag tag = new CompoundTag();
-            DeathManager.saveAllToNBT(player, tag);
+            DeathManager.savePlayerData(player);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            CompoundTag tag = new CompoundTag();
-            DeathManager.loadAllFromNBT(player, tag);
+            DeathManager.loadPlayerData(player);
             CommonEvents.onPlayerLogin(player);
         }
     }
@@ -143,13 +141,13 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerSave(PlayerEvent.SaveToFile event) {
         if (event.getEntity() instanceof ServerPlayer player)
-            DeathManager.saveAllToNBT(player, player.getPersistentData());
+            DeathManager.savePlayerData(player);
     }
 
     @SubscribeEvent
     public static void onPlayerLoad(PlayerEvent.LoadFromFile event) {
         if (event.getEntity() instanceof ServerPlayer player)
-            DeathManager.loadAllFromNBT(player, player.getPersistentData());
+            DeathManager.loadPlayerData(player);
     }
 
     @SubscribeEvent
