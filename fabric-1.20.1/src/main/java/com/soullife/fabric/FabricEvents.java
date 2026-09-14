@@ -3,15 +3,14 @@ package com.soullife.fabric;
 import com.soullife.manager.CommonEvents;
 import com.soullife.manager.DeathManager;
 import com.soullife.manager.ItemUseManager;
-import com.soullife.manager.PlayerDataStorage;
 import com.soullife.manager.SacrificeManager;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -33,13 +32,15 @@ public class FabricEvents {
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            PlayerDataStorage.loadPlayer(player);
+            CompoundTag tag = new CompoundTag();
+            DeathManager.loadAllFromNBT(player, tag);
             CommonEvents.onPlayerLogin(player);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            PlayerDataStorage.savePlayer(player);
+            CompoundTag tag = new CompoundTag();
+            DeathManager.saveAllToNBT(player, tag);
         });
 
         // Block Break - prevent ghost from breaking blocks
