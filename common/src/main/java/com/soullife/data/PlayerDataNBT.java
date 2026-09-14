@@ -2,12 +2,14 @@ package com.soullife.data;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerDataNBT {
     
-    private static final String DEATHS_KEY = "sl_deaths";
-    private static final String GHOST_KEY = "sl_ghost";
-    private static final String PERMANENT_KEY = "sl_permanent";
+    private static final String SOULLIFE_TAG = "SoulLifeData";
+    private static final String DEATHS_KEY = "Deaths";
+    private static final String GHOST_KEY = "IsGhost";
+    private static final String PERMANENT_KEY = "IsPermanentSpectator";
     
     public static void writeToTag(CompoundTag tag, PlayerData data) {
         tag.putInt(DEATHS_KEY, data.getDeathCount());
@@ -37,5 +39,18 @@ public class PlayerDataNBT {
         PlayerData data = new PlayerData();
         readFromTag(tag, data);
         return data;
+    }
+
+    public static void saveToPersistent(ServerPlayer player, PlayerData data) {
+        CompoundTag persistentData = player.getPersistentData();
+        CompoundTag soulLifeTag = persistentData.getCompound(SOULLIFE_TAG);
+        writeToTag(soulLifeTag, data);
+        persistentData.put(SOULLIFE_TAG, soulLifeTag);
+    }
+
+    public static PlayerData loadFromPersistent(ServerPlayer player) {
+        CompoundTag persistentData = player.getPersistentData();
+        CompoundTag soulLifeTag = persistentData.getCompound(SOULLIFE_TAG);
+        return deserialize(soulLifeTag);
     }
 }
