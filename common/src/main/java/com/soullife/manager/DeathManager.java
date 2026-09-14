@@ -54,17 +54,23 @@ public class DeathManager {
     }
 
     public static void addDeaths(ServerPlayer player, int amount) {
-        getPlayerData(player).addDeaths(amount);
+        PlayerData data = getPlayerData(player);
+        data.addDeaths(amount);
+        savePlayerData(player);
     }
 
     public static void setDeaths(ServerPlayer player, int amount) {
-        getPlayerData(player).setDeathCount(amount);
+        PlayerData data = getPlayerData(player);
+        data.setDeathCount(amount);
+        savePlayerData(player);
     }
 
     public static void removeDeaths(ServerPlayer player, int amount) {
         int current = getDeathCount(player);
         int newCount = Math.max(0, current - amount);
-        getPlayerData(player).setDeathCount(newCount);
+        PlayerData data = getPlayerData(player);
+        data.setDeathCount(newCount);
+        savePlayerData(player);
     }
 
     public static boolean isGhost(ServerPlayer player) {
@@ -72,7 +78,9 @@ public class DeathManager {
     }
 
     public static void setGhost(ServerPlayer player, boolean ghost) {
-        getPlayerData(player).setGhost(ghost);
+        PlayerData data = getPlayerData(player);
+        data.setGhost(ghost);
+        savePlayerData(player);
     }
 
     public static boolean isPermanentSpectator(ServerPlayer player) {
@@ -80,7 +88,9 @@ public class DeathManager {
     }
 
     public static void setPermanentSpectator(ServerPlayer player, boolean value) {
-        getPlayerData(player).setPermanentSpectator(value);
+        PlayerData data = getPlayerData(player);
+        data.setPermanentSpectator(value);
+        savePlayerData(player);
     }
     public static ItemStack getSacrificeItem(int deathIndex) {
         if (deathIndex < 0 || deathIndex >= 20) return ItemStack.EMPTY;
@@ -116,5 +126,14 @@ public class DeathManager {
 
     public static void loadFromNBT(ServerPlayer player, CompoundTag tag) {
         PlayerDataNBT.readFromTag(tag, getPlayerData(player));
+    }
+
+    public static void savePlayerData(ServerPlayer player) {
+        PlayerDataNBT.saveToPersistent(player, getPlayerData(player));
+    }
+
+    public static void loadPlayerData(ServerPlayer player) {
+        PlayerData data = PlayerDataNBT.loadFromPersistent(player);
+        playerDataMap.put(player.getUUID(), data);
     }
 }
