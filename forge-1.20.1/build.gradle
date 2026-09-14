@@ -20,8 +20,14 @@ minecraft {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.blay09.net/' }
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
+    implementation "net.blay09.mods:balm-forge:7.3.43+1.20.1"
 }
 
 sourceSets.main {
