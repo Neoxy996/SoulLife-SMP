@@ -2,7 +2,7 @@ package com.soullife.data;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerDataNBT {
     
@@ -41,16 +41,16 @@ public class PlayerDataNBT {
         return data;
     }
 
-    public static void saveToPersistent(Player player, PlayerData data) {
-        CompoundTag persistentData = player.getPersistentData();
-        CompoundTag soulLifeTag = persistentData.getCompound(SOULLIFE_TAG);
+    public static void saveToPersistent(ServerPlayer player, PlayerData data) {
+        CompoundTag playerData = player.getPersistentData();
+        CompoundTag soulLifeTag = new CompoundTag();
         writeToTag(soulLifeTag, data);
-        persistentData.put(SOULLIFE_TAG, soulLifeTag);
+        playerData.put(SOULLIFE_TAG, soulLifeTag);
     }
 
-    public static PlayerData loadFromPersistent(Player player) {
-        CompoundTag persistentData = player.getPersistentData();
-        CompoundTag soulLifeTag = persistentData.getCompound(SOULLIFE_TAG);
+    public static PlayerData loadFromPersistent(ServerPlayer player) {
+        CompoundTag playerData = player.getPersistentData();
+        CompoundTag soulLifeTag = playerData.getCompound(SOULLIFE_TAG);
         return deserialize(soulLifeTag);
     }
 }
