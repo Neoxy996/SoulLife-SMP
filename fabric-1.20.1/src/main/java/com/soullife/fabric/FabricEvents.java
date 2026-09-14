@@ -32,15 +32,13 @@ public class FabricEvents {
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            CompoundTag tag = new CompoundTag();
-            DeathManager.loadAllFromNBT(player, tag);
+            DeathManager.loadPlayerData(player);
             CommonEvents.onPlayerLogin(player);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayer player = handler.getPlayer();
-            CompoundTag tag = new CompoundTag();
-            DeathManager.saveAllToNBT(player, tag);
+            DeathManager.savePlayerData(player);
         });
 
         // Block Break - prevent ghost from breaking blocks
