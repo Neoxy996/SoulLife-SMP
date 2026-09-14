@@ -16,7 +16,8 @@ java {
 repositories {
     mavenCentral()
     maven { url 'https://maven.fabricmc.net/' }
-    maven { url 'https://maven.blay09.net/' }
+    maven { url 'https://api.modrinth.com/maven' }
+    maven { url 'https://maven.twelveiterations.com/repository/maven-public/' }
 }
 
 dependencies {
@@ -24,7 +25,9 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:0.15.11"
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.0+1.20.1"
-    modImplementation "net.blay09.mods:balm-fabric:7.3.43+1.20.1"
+    modImplementation("net.blay09.mods:balm-fabric:7.3.43+1.20.1") {
+        transitive = false
+    }
 }
 
 sourceSets.main {
