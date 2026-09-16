@@ -76,15 +76,21 @@ public class PlayerDataNBT {
     }
     
     private static String getWorldKey(ServerPlayer player) {
-        String serverDir = player.getServer().getServerDirectory().toString();
-        String worldDir = player.level().getServer().getWorldPath(net.minecraft.world.level.Level.OVERWORLD).toString();
-        
-        String worldName = worldDir.replace(serverDir, "").replaceAll("[/\\\\]", "").split("_")[0];
-        if (worldName.isEmpty()) {
-            worldName = "world";
+        try {
+            String levelPath = player.getServer().getWorldPath(player.level().dimension()).toString();
+            String serverDir = player.getServer().getServerDirectory().toString();
+            String worldName = levelPath.replace(serverDir, "").replaceAll("[/\\\\]", "");
+            
+            if (worldName.isEmpty() || worldName.equals("world")) {
+                worldName = "world";
+            } else {
+                worldName = worldName.split("_")[0];
+            }
+            
+            return "SoulLife_" + worldName;
+        } catch (Exception e) {
+            return "SoulLife_world";
         }
-        
-        return "SoulLife_" + worldName;
     }
     
     private static void saveLanguageToPersistent(ServerPlayer player, CompoundTag playerData, String worldKey) {
