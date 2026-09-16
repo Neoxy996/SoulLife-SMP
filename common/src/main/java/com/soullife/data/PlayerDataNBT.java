@@ -76,7 +76,14 @@ public class PlayerDataNBT {
     }
     
     private static String getWorldKey(ServerPlayer player) {
-        String worldName = player.level().getServer().getWorldData().getLevelName();
+        String serverDir = player.getServer().getServerDirectory().toString();
+        String worldDir = player.level().getServer().getWorldPath(net.minecraft.world.level.Level.OVERWORLD).toString();
+        
+        String worldName = worldDir.replace(serverDir, "").replaceAll("[/\\\\]", "").split("_")[0];
+        if (worldName.isEmpty()) {
+            worldName = "world";
+        }
+        
         return "SoulLife_" + worldName;
     }
     
