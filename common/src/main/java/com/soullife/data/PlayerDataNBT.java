@@ -77,17 +77,8 @@ public class PlayerDataNBT {
     
     private static String getWorldKey(ServerPlayer player) {
         try {
-            String levelPath = player.getServer().getWorldPath(player.level().dimension()).toString();
-            String serverDir = player.getServer().getServerDirectory().toString();
-            String worldName = levelPath.replace(serverDir, "").replaceAll("[/\\\\]", "");
-            
-            if (worldName.isEmpty() || worldName.equals("world")) {
-                worldName = "world";
-            } else {
-                worldName = worldName.split("_")[0];
-            }
-            
-            return "SoulLife_" + worldName;
+            String levelName = player.level().getServer().getWorldData().getLevelName();
+            return "SoulLife_" + levelName;
         } catch (Exception e) {
             return "SoulLife_world";
         }
