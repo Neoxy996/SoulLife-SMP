@@ -18,15 +18,12 @@ public class GhostDisplayManager {
             .withStyle(net.minecraft.ChatFormatting.RED);
         
         player.setCustomName(redName);
-        player.setCustomNameVisible(true);
+        player.setCustomNameVisible(false);
     }
 
     private static void setNormalDisplay(ServerPlayer player) {
-        Component whiteName = Component.literal(player.getName().getString())
-            .withStyle(net.minecraft.ChatFormatting.WHITE);
-        
-        player.setCustomName(whiteName);
-        player.setCustomNameVisible(true);
+        player.setCustomName(null);
+        player.setCustomNameVisible(false);
     }
 
     public static void refreshDisplay(ServerPlayer player) {
