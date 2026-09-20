@@ -1,6 +1,5 @@
 package com.soullife.manager;
 
-import com.soullife.util.ScoreboardManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +14,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.core.particles.ParticleTypes;
+import com.soullife.util.ScoreboardManager;
 
 public class GhostManager {
 
@@ -103,8 +103,10 @@ public class GhostManager {
 
     public static void playWitherSound(ServerPlayer player) {
         player.level().playSound(
-            player,
-            player.blockPosition(),
+            null,
+            player.blockPosition().getX(),
+            player.blockPosition().getY(),
+            player.blockPosition().getZ(),
             SoundEvents.WITHER_SPAWN,
             SoundSource.MASTER,
             1.0f, 1.0f
@@ -114,7 +116,9 @@ public class GhostManager {
     public static void playTotemEffect(ServerPlayer player) {
         player.level().playSound(
             null,
-            player.blockPosition(),
+            player.blockPosition().getX(),
+            player.blockPosition().getY(),
+            player.blockPosition().getZ(),
             SoundEvents.TOTEM_USE,
             SoundSource.PLAYERS,
             1.0f, 1.0f
