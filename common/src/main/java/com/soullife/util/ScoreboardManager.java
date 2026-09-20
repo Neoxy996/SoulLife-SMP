@@ -10,8 +10,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public class ScoreboardManager {
 
-    private static final String SIDEBAR_OBJ = "soullife_side";
-    private static final String TAB_OBJ     = "soullife_tab";
+    private static final String TAB_OBJ = "soullife_tab";
 
     public static void updateTabDisplay(ServerPlayer player) {
         int deaths = DeathManager.getDeathCount(player);
@@ -21,13 +20,9 @@ public class ScoreboardManager {
         Objective existing = scoreboard.getObjective(TAB_OBJ);
 
         if (existing == null) {
-            Component displayName;
-            
-            if (isGhost) {
-                displayName = Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
-            } else {
-                displayName = Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
-            }
+            Component displayName = isGhost 
+                ? Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
+                : Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
             
             existing = scoreboard.addObjective(
                 TAB_OBJ,
@@ -36,20 +31,15 @@ public class ScoreboardManager {
                 ObjectiveCriteria.RenderType.INTEGER
             );
         } else {
-            Component newDisplayName;
-            
-            if (isGhost) {
-                newDisplayName = Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
-            } else {
-                newDisplayName = Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
-            }
+            Component newDisplayName = isGhost 
+                ? Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
+                : Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
             
             existing.setDisplayName(newDisplayName);
         }
 
         scoreboard.setDisplayObjective(Scoreboard.DISPLAY_SLOT_LIST, existing);
-        scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), existing)
-                  .setScore(deaths);
+        scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), existing).setScore(deaths);
     }
 
     public static void resetTabDisplay(ServerPlayer player) {
