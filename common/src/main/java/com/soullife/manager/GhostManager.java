@@ -1,5 +1,6 @@
 package com.soullife.manager;
 
+import com.soullife.util.ScoreboardManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,45 +16,39 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.core.particles.ParticleTypes;
 
-/**
- * SoulLife - GhostManager
- * Handles ghost state: armor, effects, sounds, particles.
- */
 public class GhostManager {
 
-    // ─── Apply Ghost State ────────────────────────────────────────────────────
     public static void applyGhostState(ServerPlayer player) {
-        player.setGameMode(GameType.SURVIVAL);  // ✅ SURVIVAL, NOT SPECTATOR
+        player.setGameMode(GameType.SURVIVAL);
         giveGhostArmor(player);
         applyGhostEffects(player);
         playWitherSound(player);
+        GhostTagManager.addGhostTag(player);
+        ScoreboardManager.updateTabDisplay(player);
         DeathManager.setGhost(player, true);
     }
 
-    // ─── Remove Ghost State ───────────────────────────────────────────────────
     public static void removeGhostState(ServerPlayer player) {
         player.setGameMode(GameType.SURVIVAL);
         removeGhostArmor(player);
         removeGhostEffects(player);
         playTotemEffect(player);
+        GhostTagManager.removeGhostTag(player);
+        ScoreboardManager.resetTabDisplay(player);
         DeathManager.setGhost(player, false);
     }
 
-    // ─── Ghost Armor ──────────────────────────────────────────────────────────
     private static void giveGhostArmor(ServerPlayer player) {
-        // Clear all armor slots
         player.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
         player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
         player.setItemSlot(EquipmentSlot.LEGS, ItemStack.EMPTY);
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
         
-        // Skeleton head (ghost head) - can't remove
         ItemStack ghostHead = new ItemStack(Items.SKELETON_SKULL);
         ghostHead.enchant(Enchantments.BINDING_CURSE, 1);
         ghostHead.setHoverName(Component.literal("Ghost Head").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         player.setItemSlot(EquipmentSlot.HEAD, ghostHead);
         
-        // White leather armor pieces
         Item[] armorItems = {
             Items.LEATHER_CHESTPLATE,
             Items.LEATHER_LEGGINGS,
@@ -68,18 +63,12 @@ public class GhostManager {
         for (int i = 0; i < 3; i++) {
             ItemStack armor = new ItemStack(armorItems[i]);
 
-            // Dye white (RGB 255,255,255)
             net.minecraft.nbt.CompoundTag display = new net.minecraft.nbt.CompoundTag();
             display.putInt("color", 0xFFFFFF);
             armor.getOrCreateTagElement("display").merge(display);
 
-            // Add Binding Curse (can't remove)
             armor.enchant(Enchantments.BINDING_CURSE, 1);
-
-            // Add Unbreaking III
             armor.enchant(Enchantments.UNBREAKING, 3);
-
-            // Custom name
             armor.setHoverName(Component.literal("Ghost Armor").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
 
             player.setItemSlot(equipSlots[i], armor);
@@ -93,7 +82,6 @@ public class GhostManager {
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
     }
 
-    // ─── Ghost Effects ────────────────────────────────────────────────────────
     public static void applyGhostEffects(ServerPlayer player) {
         player.addEffect(new MobEffectInstance(
             MobEffects.MOVEMENT_SPEED, 999999 * 20, 0, false, false, true));
@@ -106,7 +94,6 @@ public class GhostManager {
         player.removeEffect(MobEffects.GLOWING);
     }
 
-    // ─── Wither Sound ─────────────────────────────────────────────────────────
     public static void playWitherSound(ServerPlayer player) {
         player.level().playSound(
             player,
@@ -117,7 +104,6 @@ public class GhostManager {
         );
     }
 
-    // ─── Totem Effect ─────────────────────────────────────────────────────────
     public static void playTotemEffect(ServerPlayer player) {
         player.level().playSound(
             null,
@@ -136,14 +122,14 @@ public class GhostManager {
         }
     }
 
-    // ─── Refresh Effects ──────────────────────────────────────────────────────
     public static void refreshGhostEffects(ServerPlayer player) {
         if (DeathManager.isGhost(player)) {
             applyGhostEffects(player);
+            GhostTagManager.addGhostTag(player);
+            ScoreboardManager.updateTabDisplay(player);
         }
     }
 
-    // ─── Check if armor is ghost armor ────────────────────────────────────────
     public static boolean isGhostArmor(ItemStack stack) {
         if (stack.isEmpty()) return false;
         return stack.hasCustomHoverName() &&
