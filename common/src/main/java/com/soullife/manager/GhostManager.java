@@ -24,9 +24,8 @@ public class GhostManager {
         applyGhostEffects(player);
         playWitherSound(player);
         
-        String ghostName = "💀 [GHOST] " + player.getName().getString();
-        player.setCustomName(Component.literal(ghostName)
-                .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+        String playerName = player.getName().getString();
+        player.setCustomName(Component.literal(playerName).withStyle(ChatFormatting.RED));
         player.setCustomNameVisible(true);
         
         ScoreboardManager.updateTabDisplay(player);
@@ -134,9 +133,8 @@ public class GhostManager {
         if (DeathManager.isGhost(player)) {
             applyGhostEffects(player);
             
-            String ghostName = "💀 [GHOST] " + player.getName().getString();
-            player.setCustomName(Component.literal(ghostName)
-                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            String playerName = player.getName().getString();
+            player.setCustomName(Component.literal(playerName).withStyle(ChatFormatting.RED));
             player.setCustomNameVisible(true);
             
             ScoreboardManager.updateTabDisplay(player);
