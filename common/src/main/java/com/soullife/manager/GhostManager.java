@@ -23,7 +23,12 @@ public class GhostManager {
         giveGhostArmor(player);
         applyGhostEffects(player);
         playWitherSound(player);
-        GhostTagManager.addGhostTag(player);
+        
+        String ghostName = "💀 [GHOST] " + player.getName().getString();
+        player.setCustomName(Component.literal(ghostName)
+                .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+        player.setCustomNameVisible(true);
+        
         ScoreboardManager.updateTabDisplay(player);
         DeathManager.setGhost(player, true);
     }
@@ -33,7 +38,10 @@ public class GhostManager {
         removeGhostArmor(player);
         removeGhostEffects(player);
         playTotemEffect(player);
-        GhostTagManager.removeGhostTag(player);
+        
+        player.setCustomName(null);
+        player.setCustomNameVisible(false);
+        
         ScoreboardManager.resetTabDisplay(player);
         DeathManager.setGhost(player, false);
     }
@@ -125,7 +133,12 @@ public class GhostManager {
     public static void refreshGhostEffects(ServerPlayer player) {
         if (DeathManager.isGhost(player)) {
             applyGhostEffects(player);
-            GhostTagManager.addGhostTag(player);
+            
+            String ghostName = "💀 [GHOST] " + player.getName().getString();
+            player.setCustomName(Component.literal(ghostName)
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            player.setCustomNameVisible(true);
+            
             ScoreboardManager.updateTabDisplay(player);
         }
     }
