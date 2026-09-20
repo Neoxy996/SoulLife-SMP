@@ -24,11 +24,9 @@ public class ScoreboardManager {
             Component displayName;
             
             if (isGhost) {
-                displayName = Component.literal("💀 [GHOST] Deaths 💀")
-                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
+                displayName = Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
             } else {
-                displayName = Component.literal("Deaths")
-                        .withStyle(ChatFormatting.YELLOW);
+                displayName = Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
             }
             
             existing = scoreboard.addObjective(
@@ -41,11 +39,9 @@ public class ScoreboardManager {
             Component newDisplayName;
             
             if (isGhost) {
-                newDisplayName = Component.literal("💀 [GHOST] Deaths 💀")
-                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
+                newDisplayName = Component.literal("Deaths").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
             } else {
-                newDisplayName = Component.literal("Deaths")
-                        .withStyle(ChatFormatting.YELLOW);
+                newDisplayName = Component.literal("Deaths").withStyle(ChatFormatting.YELLOW);
             }
             
             existing.setDisplayName(newDisplayName);
