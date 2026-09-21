@@ -10,8 +10,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public class ScoreboardManager {
 
-    private static final String SIDEBAR_OBJ = "soullife_side";
-    private static final String TAB_OBJ     = "soullife_tab";
+    private static final String TAB_OBJ = "soullife_tab";
 
     public static void updateTabDisplay(ServerPlayer player) {
         int deaths = DeathManager.getDeathCount(player);
