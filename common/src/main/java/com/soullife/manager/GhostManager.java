@@ -17,6 +17,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 
 public class GhostManager {
 
@@ -29,7 +30,7 @@ public class GhostManager {
             team = scoreboard.addPlayerTeam(GHOST_TEAM);
             team.setColor(ChatFormatting.RED);
             team.setDisplayName(Component.literal(GHOST_TEAM).withStyle(ChatFormatting.RED));
-            team.setCollisionRule(net.minecraft.world.scores.teams.Team.CollisionRule.ALWAYS);
+            team.setCollisionRule(Team.CollisionRule.ALWAYS);
         }
         
         return team;
