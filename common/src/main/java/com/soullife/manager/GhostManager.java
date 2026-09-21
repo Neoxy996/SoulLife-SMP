@@ -1,5 +1,6 @@
 package com.soullife.manager;
 
+import com.soullife.util.ScoreboardManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,9 +15,25 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.core.particles.ParticleTypes;
-import com.soullife.util.ScoreboardManager;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 
 public class GhostManager {
+
+    private static final String GHOST_TEAM = "SoulLife";
+
+    private static PlayerTeam getOrCreateGhostTeam(Scoreboard scoreboard) {
+        PlayerTeam team = scoreboard.getPlayerTeam(GHOST_TEAM);
+        
+        if (team == null) {
+            team = scoreboard.addPlayerTeam(GHOST_TEAM);
+            team.setColor(ChatFormatting.RED);
+            team.setDisplayName(Component.literal(GHOST_TEAM).withStyle(ChatFormatting.RED));
+            team.setCollisionRule(net.minecraft.world.scores.teams.Team.CollisionRule.ALWAYS);
+        }
+        
+        return team;
+    }
 
     public static void applyGhostState(ServerPlayer player) {
         player.setGameMode(GameType.SURVIVAL);
@@ -24,10 +41,7 @@ public class GhostManager {
         applyGhostEffects(player);
         playWitherSound(player);
         
-        String playerName = player.getName().getString();
-        player.setCustomName(Component.literal(playerName).withStyle(ChatFormatting.RED));
-        player.setCustomNameVisible(true);
-        
+        addToGhostTeam(player);
         ScoreboardManager.updateTabDisplay(player);
         DeathManager.setGhost(player, true);
     }
@@ -38,11 +52,24 @@ public class GhostManager {
         removeGhostEffects(player);
         playTotemEffect(player);
         
-        player.setCustomName(null);
-        player.setCustomNameVisible(false);
-        
+        removeFromGhostTeam(player);
         ScoreboardManager.resetTabDisplay(player);
         DeathManager.setGhost(player, false);
+    }
+
+    private static void addToGhostTeam(ServerPlayer player) {
+        Scoreboard scoreboard = player.getServer().getScoreboard();
+        PlayerTeam team = getOrCreateGhostTeam(scoreboard);
+        scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
+    }
+
+    private static void removeFromGhostTeam(ServerPlayer player) {
+        Scoreboard scoreboard = player.getServer().getScoreboard();
+        PlayerTeam team = scoreboard.getPlayerTeam(GHOST_TEAM);
+        
+        if (team != null) {
+            scoreboard.removePlayerFromTeam(player.getScoreboardName(), team);
+        }
     }
 
     private static void giveGhostArmor(ServerPlayer player) {
@@ -136,11 +163,7 @@ public class GhostManager {
     public static void refreshGhostEffects(ServerPlayer player) {
         if (DeathManager.isGhost(player)) {
             applyGhostEffects(player);
-            
-            String playerName = player.getName().getString();
-            player.setCustomName(Component.literal(playerName).withStyle(ChatFormatting.RED));
-            player.setCustomNameVisible(true);
-            
+            addToGhostTeam(player);
             ScoreboardManager.updateTabDisplay(player);
         }
     }
