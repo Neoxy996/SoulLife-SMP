@@ -13,15 +13,15 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 
 public class FabricEvents {
 
     public static void register() {
-        // Player Death
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player) {
-                CommonEvents.onPlayerDeath(player);
+                CommonEvents.onPlayerDeath(player, damageSource);
             }
             return true;
         });
@@ -41,7 +41,6 @@ public class FabricEvents {
             DeathManager.savePlayerData(player);
         });
 
-        // Block Break - prevent ghost from breaking blocks
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (CommonEvents.onBlockBreak(serverPlayer)) {
@@ -51,7 +50,6 @@ public class FabricEvents {
             return InteractionResult.PASS;
         });
 
-        // Block Place - prevent ghost from placing blocks ONLY
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (DeathManager.isGhost(serverPlayer)) {
