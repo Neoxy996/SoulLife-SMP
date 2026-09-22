@@ -3,28 +3,27 @@ package com.soullife.manager;
 import com.soullife.util.MessageUtil;
 import com.soullife.util.ScoreboardManager;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.minecraft.network.chat.Component;
 
 public class CommonEvents {
 
-    public static void onPlayerDeath(ServerPlayer player, DamageSource damageSource) {
+    public static void onPlayerDeath(ServerPlayer player) {
         if (DeathManager.isPermanentSpectator(player)) return;
 
         ItemStack offHand = player.getOffhandItem();
         ItemStack mainHand = player.getMainHandItem();
         boolean hasTotem = offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING);
         
-        boolean isVoidDamage = damageSource.is(net.minecraft.tags.DamageTypeTags.OUT_OF_WORLD);
+        boolean isVoidDeath = isVoidDamage(player);
         
         if (!hasTotem) {
             dropOriginalArmor(player);
         }
 
-        if (hasTotem && !isVoidDamage) {
+        if (hasTotem && !isVoidDeath) {
             return;
         }
 
@@ -57,6 +56,12 @@ public class CommonEvents {
 
         ItemStack required = SacrificeManager.getRequiredItem(player);
         MessageUtil.sendDeathMessages(player, required);
+    }
+
+    private static boolean isVoidDamage(ServerPlayer player) {
+        return player.getLastDeathMessage() != null && 
+               (player.getLastDeathMessage().getString().contains("Fell out of the world") ||
+                player.getLastDeathMessage().getString().contains("didn't want to live in the same world"));
     }
 
     public static void onPlayerRespawn(ServerPlayer player) {
