@@ -22,22 +22,20 @@ public class ForgeEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            // Check if totem will save BEFORE dropping armor
             ItemStack offHand = player.getOffhandItem();
             ItemStack mainHand = player.getMainHandItem();
             boolean hasTotem = offHand.is(Items.TOTEM_OF_UNDYING) || mainHand.is(Items.TOTEM_OF_UNDYING);
             
+            boolean isVoidDeath = event.getSource().getMsgId().equals("outOfWorld");
+            
             if (!hasTotem) {
-                // Only drop armor if NO totem
                 CommonEvents.dropOriginalArmor(player);
             }
 
-            if (hasTotem) {
-                // Totem will protect - don't count as death
+            if (hasTotem && !isVoidDeath) {
                 return;
             }
 
-            // If ghost and didn't pay item - don't count as death
             if (DeathManager.isGhost(player)) {
                 ItemStack required = SacrificeManager.getRequiredItem(player);
                 if (!SacrificeManager.hasItem(player, required)) {
@@ -45,8 +43,7 @@ public class ForgeEvents {
                 }
             }
 
-            // Otherwise call common death handler
-            CommonEvents.onPlayerDeath(player);
+            CommonEvents.onPlayerDeath(player, event.getSource());
         }
     }
 
@@ -99,7 +96,6 @@ public class ForgeEvents {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (DeathManager.isGhost(player)) {
-                // Prevent ALL block placement for ghost
                 event.setCanceled(true);
             }
         }
@@ -112,22 +108,17 @@ public class ForgeEvents {
         if (event.phase == TickEvent.Phase.END) {
             tickCounter++;
             
-            // Only check every 5 ticks (not every tick) to save performance
             if (tickCounter % 5 != 0) return;
             
             for (ServerPlayer serverPlayer : event.getServer().getPlayerList().getPlayers()) {
-                // Check for sacrifice items (every 5 ticks for fast response)
                 if (DeathManager.isGhost(serverPlayer)) {
                     ItemStack required = SacrificeManager.getRequiredItem(serverPlayer);
                     if (!required.isEmpty() && SacrificeManager.hasItem(serverPlayer, required)) {
-                        // Item found in inventory - sacrifice immediately
                         SacrificeManager.trySacrifice(serverPlayer);
-                        // Remove ghost armor
                         removeGhostArmorEquipped(serverPlayer);
                     }
                 }
                 
-                // Remove ghost armor from inventory for ALL players
                 for (int i = 0; i < 36; i++) {
                     ItemStack stack = serverPlayer.getInventory().getItem(i);
                     if (!stack.isEmpty() && isGhostArmor(stack)) {
