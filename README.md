@@ -8,7 +8,6 @@ Die. Become a ghost. Sacrifice rare items to return to life.
 After 20 deaths, you are trapped as a spectator **forever**.
 
 ![Version](https://img.shields.io/badge/version-1.1.0-gold)
-![NeoForge](https://img.shields.io/badge/NeoForge-1.21.1-orange)
 ![Fabric](https://img.shields.io/badge/Fabric-1.20.1-blue)
 ![Forge](https://img.shields.io/badge/Forge-1.20.1-red)
 ![Server Side](https://img.shields.io/badge/Side-Server--Side-purple)
@@ -94,14 +93,6 @@ All commands support **Tab autocomplete**.
 
 The mod automatically detects your Minecraft language setting. You can override it with `/soullife language <code>`.
 
-| Language | Code |
-|----------|------|
-| English | `en_us` |
-| العربية | `ar_sa` |
-| Français | `fr_fr` |
-| Español | `es_es` |
-| Português | `pt_br` |
-
 ---
 
 ## Crafting Recipe
@@ -117,23 +108,6 @@ Netherite Ingot | Netherite Ingot | Netherite Ingot
      Dragon Egg
 ```
 
----
-
-## Installation
-
-1. Download the correct JAR for your mod loader from [Releases](../../releases)
-   - `SoulLife-SMP-neoforge-1.21.1.jar` → NeoForge 1.21.1
-   - `SoulLife-SMP-fabric-1.20.1.jar` → Fabric 1.20.1
-   - `SoulLife-SMP-forge-1.20.1.jar` → Forge 1.20.1
-
-2. Place the JAR in your server's `mods/` folder
-
-3. Start your server
-
-**Fabric users:** Also install [Fabric API](https://modrinth.com/mod/fabric-api)
-
----
-
 ## Features
 
 ✅ **20-Death Progression System**  
@@ -143,54 +117,9 @@ Netherite Ingot | Netherite Ingot | Netherite Ingot
 ✅ **Wither Sound** on death  
 ✅ **Totem Particles & Sound** on revival  
 ✅ **Permanent Spectator** after death 20  
-✅ **5 Languages** (with per-player selection)  
 ✅ **Customizable Items** (via `/soullife edititem`)  
 ✅ **Dragon Egg Recipe** (craftable with rare items)  
 ✅ **Server-Side Only** (no client installation needed)  
-✅ **Multi-Loader Support** (NeoForge, Fabric, Forge)
-
----
-
-## Supported Versions
-
-| Loader | Version |
-|--------|---------|
-| NeoForge | 1.21.1 |
-| Fabric | 1.20.1 |
-| Forge | 1.20.1 |
-
----
-
-## Building from Source
-
-Requirements: JDK 21 or higher
-
-```bash
-# Build NeoForge
-./gradlew :neoforge-1.21.1:build
-
-# Build Fabric
-./gradlew :fabric-1.20.1:build
-
-# Build Forge
-./gradlew :forge-1.20.1:build
-```
-
-Output JARs in `<loader>/build/libs/`
-
----
-
-## Project Structure
-
-```
-SoulLife-SMP/
-├── common/                   Shared code
-├── neoforge-1.21.1/         NeoForge 1.21.1
-├── fabric-1.20.1/           Fabric 1.20.1
-├── forge-1.20.1/            Forge 1.20.1
-├── .github/workflows/        GitHub Actions CI
-└── docs/                     Documentation
-```
 
 ---
 
