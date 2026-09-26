@@ -15,20 +15,17 @@ import net.minecraft.world.item.ItemStack;
  */
 public class MessageUtil {
 
-    // ── Helper ────────────────────────────────────────────────────────────────
+ 
     private static Component msg(ServerPlayer player, String key, Object... args) {
         String text = TranslationManager.get(player, key, args);
         return Component.literal(text);
     }
 
     private static Component msgGlobal(String key, Object... args) {
-        // For broadcasts: use English as base, each player sees their own lang
-        // We broadcast per-player below
         String text = TranslationManager.get(LanguageManager.DEFAULT_LANG, key, args);
         return Component.literal(text);
     }
 
-    // ── Death Messages ────────────────────────────────────────────────────────
     public static void sendDeathMessages(ServerPlayer player, ItemStack required) {
         int deaths = DeathManager.getDeathCount(player);
         String itemName = required.getHoverName().getString();
